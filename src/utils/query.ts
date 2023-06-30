@@ -16,9 +16,9 @@ const draver = createConnection({
 
 export const query = <T = DefaultQueryResult, D extends 'draver' | 'bender' = 'bender'>(
     query: string,
-    databaseName: D
+    databaseName?: D
 ): Promise<QueryResult<T>> => {
-    const database = databaseName === 'bender' ? bender : draver;
+    const database = databaseName === 'draver' ? draver : bender;
 
     return new Promise((resolve, reject) => {
         database.query(query, (error, request) => {
