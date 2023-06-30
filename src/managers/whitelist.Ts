@@ -23,7 +23,7 @@ export class WhitelistManager {
         list.push(userId)
         this.cache.set(guild.id, { guild_id: guild.id, whitelist: list })
 
-        query(`UPDATE ${DatabaseTables.Whitelist} SET whitelist='${JSON.stringify(list)}' WHERE guild_id='${guild.id}'`)
+        query(`INSERT INTO ${DatabaseTables.Whitelist} (guild_id, whitelist) VALUES ('${guild.id}', '${JSON.stringify(list)}') ON DUPLICATE KEY UPDATE whitelist='${JSON.stringify(list)}'`)
         return true
     }
     public removeUser(guild: Guild, userId: string) {

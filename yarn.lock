@@ -108,10 +108,10 @@
   resolved "https://registry.yarnpkg.com/@vladfrangu/async_event_emitter/-/async_event_emitter-2.2.2.tgz#84c5a3f8d648842cec5cc649b88df599af32ed88"
   integrity sha512-HIzRG7sy88UZjBJamssEczH5q7t5+axva19UbZLO6u0ySbYPrwzWiXBcC0WuHyhKKoeCyneH+FvYzKQq/zTtkQ==
 
-amethystjs@^1.6.1:
-  version "1.6.1"
-  resolved "https://registry.yarnpkg.com/amethystjs/-/amethystjs-1.6.1.tgz#73c91656bc3eaa86839da8fa9a47afe7ee8f286c"
-  integrity sha512-6VU85xjioAE7De3Nt+YrOM+4SCBhbO/LIfCbQOXE70hcg4nYl8WznRcZBDVLqt88Nrh8B+KvPxMWAov+X9F80A==
+amethystjs@^1.6.2:
+  version "1.6.2"
+  resolved "https://registry.yarnpkg.com/amethystjs/-/amethystjs-1.6.2.tgz#20c9c1155e0d1a2a80cb60dfe02971fe23896d33"
+  integrity sha512-N9fGi2J7tZgE74OBn9nYTZCQNuIERHSJhWn1GCTQY8Hhsf2bn+gVrNL5A7LdIVQnpgU2DrEo5RiudBb/Zd5mrQ==
   dependencies:
     discord.js "^14.8.0"
     dsc-pagination "^1.0.3"

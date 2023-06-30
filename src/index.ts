@@ -18,3 +18,5 @@ const client = new AmethystClient(
         token: process.env.token
     }
 );
+
+client.start({});

@@ -22,9 +22,7 @@ export const query = <T = DefaultQueryResult, D extends 'draver' | 'bender' = 'b
 
     return new Promise((resolve, reject) => {
         database.query(query, (error, request) => {
-            if (error) {
-                reject(error);
-            }
+            if (error) return reject(error);
             resolve(request);
         });
     });

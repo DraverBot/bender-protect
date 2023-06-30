@@ -7,6 +7,7 @@ declare global {
             db_u: string;
             db_draver: string;
             db_bender: string;
+            draverId: string;
         }
     }
 }
