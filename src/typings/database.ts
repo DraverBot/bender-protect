@@ -4,7 +4,8 @@ export enum DatabaseTables {
     Whitelist = 'whitelist',
     DraverModlogs = 'modlogs',
     Sanctions = 'sanctions',
-    Tempban = 'tempbans'
+    Tempban = 'tempbans',
+    Configs = 'configs'
 }
 export type DefaultQueryResult = {
     fieldCount: number;
@@ -53,3 +54,8 @@ export type tempbans = {
     endsAt: number;
     id: number;
 };
+export type configs<Raw extends boolean> = {
+    gban: If<Raw, string, boolean>;
+    raidmode: If<Raw, string, boolean>;
+};
+export type configsDb<Raw extends boolean = false> = configs<Raw> & { guild_id: string };

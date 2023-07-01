@@ -168,3 +168,4 @@ export const isGbanned = async (user: string | User) => {
 
     return list.length > 0;
 };
+export const sqlise = (str: string) => str.replace(/"/g, '\\"')

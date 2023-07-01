@@ -88,3 +88,4 @@ export const unAllowedAction = (user: User, guild: Guild) =>
     base(user, { denied: true })
         .setTitle('Action interdite')
         .setDescription(`Vous n'êtes pas autorisé à faire ça sur ${guild.name}`);
+export const raidmode = (user: User, guild: Guild) => base(user, { accentColor: true }).setTitle("Raidmode").setDescription(`Désolé, vous ne pouvez pas rentrer dans ${guild.name}, car il est actuellement en mode raid.\nEssayez de le rejoindre plus tard`)

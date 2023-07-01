@@ -13,6 +13,7 @@ const client = new AmethystClient(
         commandsFolder: './dist/commands',
         eventsFolder: './dist/events',
         buttonsFolder: './dist/buttons',
+        autocompleteListenersFolder: './dist/autocompletes',
         preconditionsFolder: './dist/preconditions',
         debug: true,
         token: process.env.token

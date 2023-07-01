@@ -7,6 +7,7 @@ import { readdirSync } from 'fs';
 import express from 'express';
 import { SanctionManager } from '../managers/sanctionsManager';
 import { TempbansManager } from '../managers/tempbansManager';
+import { ConfigsManager } from '../managers/configsManager';
 
 const app = express();
 app.use(express.json());
@@ -19,6 +20,7 @@ export default new AmethystEvent('ready', (client) => {
     client.whitelist = new WhitelistManager();
     client.sanctions = new SanctionManager();
     client.tempbans = new TempbansManager(client);
+    client.confs = new ConfigsManager();
 
     const listeners: DraverAPIListener<BenderAPIType>[] = [];
 
@@ -65,6 +67,7 @@ declare module 'discord.js' {
     interface Client {
         whitelist: WhitelistManager;
         sanctions: SanctionManager;
-        tempbans: TempbansManager
+        tempbans: TempbansManager;
+        confs: ConfigsManager;
     }
 }

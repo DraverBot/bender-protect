@@ -43,7 +43,7 @@ export class Tempban {
     }
     public makeDef() {
         this.delete();
-        clearTimeout(this.timeout)
+        clearTimeout(this.timeout);
         delete this.timeout;
     }
     private delete() {
