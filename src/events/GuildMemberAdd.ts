@@ -1,5 +1,5 @@
 import { AmethystEvent } from "amethystjs";
-import { raidmode } from "../utils/embeds";
+import { gbanned, raidmode } from "../utils/embeds";
 import { isGbanned } from "../utils/toolbox";
 
 export default new AmethystEvent('guildMemberAdd', async(member) => {
@@ -11,6 +11,7 @@ export default new AmethystEvent('guildMemberAdd', async(member) => {
         return member.kick('Raidmode').catch(() => {})
     }
     if (client.confs.getConfig(guild.id, 'gban') && await isGbanned(member.id)) {
-        
+        await member.send({ embeds: [gbanned(member.user, guild)] }).catch(() => {})        
+        return member.ban({ reason: "User GBanned" })
     }
 })
