@@ -1,6 +1,9 @@
-import { SanctionName, sanctionDataType, sanctionType } from "../typings/database";
+import { SanctionName, sanctionDataType, sanctionType } from '../typings/database';
 
-export const sanctionsData: Record<SanctionName, { default: sanctionType; time: number; name: string; enabled: boolean }> = {
+export const sanctionsData: Record<
+    SanctionName,
+    { default: sanctionType; time: number; name: string; enabled: boolean }
+> = {
     ban: {
         default: 'downgrade',
         time: 0,
@@ -79,8 +82,8 @@ export const sanctionsData: Record<SanctionName, { default: sanctionType; time: 
         time: 0,
         enabled: true
     }
-}
-export const sanctionTypeData: Record<sanctionType, { name: string; time: boolean}> = {
+};
+export const sanctionTypeData: Record<sanctionType, { name: string; time: boolean }> = {
     kick: {
         name: 'Expulsion',
         time: false
@@ -97,4 +100,4 @@ export const sanctionTypeData: Record<sanctionType, { name: string; time: boolea
         name: 'Bannissement temporaire',
         time: true
     }
-}
+};

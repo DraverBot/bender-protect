@@ -3,12 +3,12 @@ import { WhitelistManager } from '../managers/whitelist';
 import { ActivityType, User } from 'discord.js';
 import { DraverAPIListener } from '../structures/APIListener';
 import { BenderAPIOptions, BenderAPIType } from '../typings/draver';
-import { readdirSync } from 'fs'
-import express from 'express'
+import { readdirSync } from 'fs';
+import express from 'express';
 import { SanctionManager } from '../managers/sanctionsManager';
 
 const app = express();
-app.use(express.json())
+app.use(express.json());
 
 export default new AmethystEvent('ready', (client) => {
     client.user.setActivity({
@@ -18,26 +18,29 @@ export default new AmethystEvent('ready', (client) => {
     client.whitelist = new WhitelistManager();
     client.sanctions = new SanctionManager();
 
-    const listeners: DraverAPIListener<BenderAPIType>[] = []
+    const listeners: DraverAPIListener<BenderAPIType>[] = [];
 
     readdirSync('./dist/listeners').forEach((name) => {
-        const path = `../listeners/${name}`
+        const path = `../listeners/${name}`;
         const listener: DraverAPIListener<BenderAPIType> = require(path)?.default ?? require(path);
 
-        if (!listener || !(listener instanceof DraverAPIListener)) return client.debug(`Default value of ${path} is not a Draver API Listener`, DebugImportance.Error)
-        listeners.push(listener)
-    })
+        if (!listener || !(listener instanceof DraverAPIListener))
+            return client.debug(`Default value of ${path} is not a Draver API Listener`, DebugImportance.Error);
+        listeners.push(listener);
+    });
 
     client.guilds.fetch().catch(() => {});
 
-    app.post(`/actions`, async(req, res) => {
+    app.post(`/actions`, async (req, res) => {
         res.sendStatus(200);
 
         const data = req.body as BenderAPIOptions<BenderAPIType>;
-        const listener = listeners.find(x => x.keys.includes(data.type));
+        const listener = listeners.find((x) => x.keys.includes(data.type));
 
         const guild = client.guilds.cache.get(data.guild);
-        const user = (client.users.cache.get(data.user) ?? await client.users.fetch(data.user).catch(() => {}) ?? guild?.members?.cache?.get(data.user)?.user) as User
+        const user = (client.users.cache.get(data.user) ??
+            (await client.users.fetch(data.user).catch(() => {})) ??
+            guild?.members?.cache?.get(data.user)?.user) as User;
 
         if (!guild) return;
 
@@ -51,7 +54,7 @@ export default new AmethystEvent('ready', (client) => {
             client,
             data: data.data
         });
-    })
+    });
 
     app.listen(process.env.draver_port);
 });

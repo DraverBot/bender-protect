@@ -21,7 +21,7 @@ export type whitelist<Raw extends boolean = false> = {
     whitelist: If<Raw, string, string[]>;
 };
 export enum SanctionName {
-    ChannelEdit = "channeledit",
+    ChannelEdit = 'channeledit',
     ChannelCreate = 'channelcreate',
     ChannelDelete = 'channeldelete',
     Ban = 'ban',
@@ -35,14 +35,14 @@ export enum SanctionName {
     serverEdit = 'serverEdit',
     memberEdit = 'memberEdit'
 }
-export type sanctionType = 'ban' | 'kick' | 'tempban' | 'downgrade'
+export type sanctionType = 'ban' | 'kick' | 'tempban' | 'downgrade';
 export type sanctionDataType<Raw extends boolean> = {
     name: SanctionName;
     sanction: sanctionType;
     time: number | 0;
-    enabled: If<Raw, string, boolean>
-}
+    enabled: If<Raw, string, boolean>;
+};
 export type sanctions<Raw extends boolean = false> = {
     guild_id: string;
-    sanctions: If<Raw, string, sanctionDataType<Raw>[]>
-}
+    sanctions: If<Raw, string, sanctionDataType<Raw>[]>;
+};

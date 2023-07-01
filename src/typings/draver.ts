@@ -18,7 +18,7 @@ export type BenderAPIType =
 type BenderAPIOptionsData<T extends BenderAPIType> = T extends 'Unmute'
     ? { remainingTimeInMs: number; member: string }
     : T extends 'Kick' | 'Mute'
-    ? { member: string; }
+    ? { member: string }
     : T extends 'Censor' | 'Rename'
     ? { oldName: string; member: string }
     : T extends 'ChannelEdit' | 'RoleEdit'

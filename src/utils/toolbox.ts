@@ -158,10 +158,13 @@ export const pingChannel = (channel: Channel | string) =>
     typeof channel === 'string' ? `<#${channel}>` : `<#${channel.id}>`;
 export const pingRole = (role: Role | string) => (typeof role === 'string' ? `<@&${role}>` : `<@&${role.id}>`);
 export const isDraver = (user: User | string) => (typeof user === 'string' ? user : user.id) === process.env.draverId;
-export const isGbanned = async(user: string | User) => {
-    const id = typeof user === 'string' ? user : user.id
-    const list = await query<{ user_id: string; reason: string; date: number }>(`SELECT * FROM gban_list WHERE user_id="${id}"`, 'draver')
+export const isGbanned = async (user: string | User) => {
+    const id = typeof user === 'string' ? user : user.id;
+    const list = await query<{ user_id: string; reason: string; date: number }>(
+        `SELECT * FROM gban_list WHERE user_id="${id}"`,
+        'draver'
+    );
     if (!list) return false;
 
     return list.length > 0;
-}
+};
