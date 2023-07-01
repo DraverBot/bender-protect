@@ -6,8 +6,8 @@ config();
 
 const client = new AmethystClient(
     {
-        intents: ['Guilds', 'GuildBans', 'GuildEmojisAndStickers', 'GuildModeration', 'GuildWebhooks'],
-        partials: [Partials.Channel]
+        intents: ['Guilds', 'GuildBans', 'GuildEmojisAndStickers', 'GuildModeration', 'GuildWebhooks', 'GuildMembers'],
+        partials: [Partials.Channel, Partials.GuildMember]
     },
     {
         commandsFolder: './dist/commands',

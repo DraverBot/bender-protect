@@ -8,6 +8,7 @@ declare global {
             db_draver: string;
             db_bender: string;
             draverId: string;
+            draver_port: string;
         }
     }
 }

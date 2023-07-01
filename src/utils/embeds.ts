@@ -1,4 +1,4 @@
-import { ColorResolvable, EmbedBuilder, PermissionsString, User } from 'discord.js';
+import { ColorResolvable, EmbedBuilder, Guild, PermissionsString, User } from 'discord.js';
 import { getRolePerm, util } from './toolbox';
 
 const base = (
@@ -84,3 +84,4 @@ export const paginationInvalidPage = (user: User, max: number) =>
         .setTitle('Page invalide')
         .setDescription(`Veuillez spécifier un **nombre** valide compris entre **1** et **${max.toLocaleString()}**`);
 export const cancel = () => new EmbedBuilder().setTitle('💡 Annulé').setColor('Yellow');
+export const unAllowedAction = (user: User, guild: Guild) => base(user, { denied: true }).setTitle("Action interdite").setDescription(`Vous n'êtes pas autorisé à faire ça sur ${guild.name}`)
