@@ -3,7 +3,8 @@ import { If } from 'discord.js';
 export enum DatabaseTables {
     Whitelist = 'whitelist',
     DraverModlogs = 'modlogs',
-    Sanctions = 'sanctions'
+    Sanctions = 'sanctions',
+    Tempban = 'tempbans'
 }
 export type DefaultQueryResult = {
     fieldCount: number;
@@ -45,4 +46,10 @@ export type sanctionDataType<Raw extends boolean> = {
 export type sanctions<Raw extends boolean = false> = {
     guild_id: string;
     sanctions: If<Raw, string, sanctionDataType<Raw>[]>;
+};
+export type tempbans = {
+    guild_id: string;
+    user_id: string;
+    endsAt: number;
+    id: number;
 };
