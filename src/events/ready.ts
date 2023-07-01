@@ -5,6 +5,7 @@ import { DraverAPIListener } from '../structures/APIListener';
 import { BenderAPIOptions, BenderAPIType } from '../typings/draver';
 import { readdirSync } from 'fs'
 import express from 'express'
+import { SanctionManager } from '../managers/sanctionsManager';
 
 const app = express();
 app.use(express.json())
@@ -15,6 +16,7 @@ export default new AmethystEvent('ready', (client) => {
         type: ActivityType.Watching
     });
     client.whitelist = new WhitelistManager();
+    client.sanctions = new SanctionManager();
 
     const listeners: DraverAPIListener<BenderAPIType>[] = []
 
@@ -57,5 +59,6 @@ export default new AmethystEvent('ready', (client) => {
 declare module 'discord.js' {
     interface Client {
         whitelist: WhitelistManager;
+        sanctions: SanctionManager;
     }
 }

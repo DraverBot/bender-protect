@@ -2,7 +2,8 @@ import { If } from 'discord.js';
 
 export enum DatabaseTables {
     Whitelist = 'whitelist',
-    DraverModlogs = 'modlogs'
+    DraverModlogs = 'modlogs',
+    Sanctions = 'sanctions'
 }
 export type DefaultQueryResult = {
     fieldCount: number;
@@ -19,7 +20,7 @@ export type whitelist<Raw extends boolean = false> = {
     guild_id: string;
     whitelist: If<Raw, string, string[]>;
 };
-export enum SanctionType {
+export enum SanctionName {
     ChannelEdit = "channeledit",
     ChannelCreate = 'channelcreate',
     ChannelDelete = 'channeldelete',
@@ -33,4 +34,15 @@ export enum SanctionType {
     roleDelete = 'roledelete',
     serverEdit = 'serverEdit',
     memberEdit = 'memberEdit'
+}
+export type sanctionType = 'ban' | 'kick' | 'tempban' | 'downgrade'
+export type sanctionDataType<Raw extends boolean> = {
+    name: SanctionName;
+    sanction: sanctionType;
+    time: number | 0;
+    enabled: If<Raw, string, boolean>
+}
+export type sanctions<Raw extends boolean = false> = {
+    guild_id: string;
+    sanctions: If<Raw, string, sanctionDataType<Raw>[]>
 }
