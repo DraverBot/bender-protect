@@ -88,5 +88,25 @@ export const unAllowedAction = (user: User, guild: Guild) =>
     base(user, { denied: true })
         .setTitle('Action interdite')
         .setDescription(`Vous n'êtes pas autorisé à faire ça sur ${guild.name}`);
-export const raidmode = (user: User, guild: Guild) => base(user, { accentColor: true }).setTitle("Raidmode").setDescription(`Désolé, vous ne pouvez pas rentrer dans ${guild.name}, car il est actuellement en mode raid.\nEssayez de le rejoindre plus tard`)
-export const gbanned = (user: User, guild: Guild) => base(user, { denied: true }).setTitle("GBanni").setDescription(`Vous êtes GBanni des productions Draver. Pour cette raison, vous avez été banni de ${guild.name}.\nSi vous voulez revendiquer quoi que ce soit, contactez nous à l'adresse \`draver.industries@proton.me\``)
+export const raidmode = (user: User, guild: Guild) =>
+    base(user, { accentColor: true })
+        .setTitle('Raidmode')
+        .setDescription(
+            `Désolé, vous ne pouvez pas rentrer dans ${guild.name}, car il est actuellement en mode raid.\nEssayez de le rejoindre plus tard`
+        );
+export const gbanned = (user: User, guild: Guild) =>
+    base(user, { denied: true })
+        .setTitle('GBanni')
+        .setDescription(
+            `Vous êtes GBanni des productions Draver. Pour cette raison, vous avez été banni de ${guild.name}.\nSi vous voulez revendiquer quoi que ce soit, contactez nous à l'adresse \`draver.industries@proton.me\``
+        );
+export const invalidNumber = (user: User, max: number, min: number) =>
+    base(user, { denied: true })
+        .setTitle('Nombre invalide')
+        .setDescription(
+            `Vous avez saisi un nombre invalide.\nVeuillez choisir un nombre ${
+                max === null
+                    ? `supérieur à ${min.toLocaleString('fr')}`
+                    : `entre ${min.toLocaleString('fr')} et ${max.toLocaleString('fr')}`
+            }`
+        );

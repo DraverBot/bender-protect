@@ -13,7 +13,9 @@ import {
     Client,
     GuildMember,
     Channel,
-    Role
+    Role,
+    TextBasedChannel,
+    MessageCreateOptions
 } from 'discord.js';
 import perms from '../data/perms.json';
 import utils from '../data/utils.json';
@@ -21,7 +23,6 @@ import { permType } from '../typings/tools';
 import { ButtonIds } from '../typings/client';
 import { log4js, waitForInteraction } from 'amethystjs';
 import { classic } from './embeds';
-import axios from 'axios';
 import { query } from './query';
 
 export const util = <Key extends keyof typeof utils, Type = (typeof utils)[Key]>(key: Key): Type => {
@@ -168,4 +169,25 @@ export const isGbanned = async (user: string | User) => {
 
     return list.length > 0;
 };
-export const sqlise = (str: string) => str.replace(/"/g, '\\"')
+export const sqlise = (str: string) => str.replace(/"/g, '\\"');
+export const sendAndDelete = async ({
+    channel,
+    content,
+    time = 10000
+}: {
+    time?: number;
+    channel: TextBasedChannel;
+    content: MessageCreateOptions;
+}) => {
+    const msg = await channel.send(content).catch(log4js.trace);
+    if (msg) {
+        setTimeout(() => {
+            msg.delete().catch(() => {});
+        }, time);
+    }
+};
+export const resize = (str: string, length = 100) => {
+    if (str.length <= length) return str;
+
+    return str.substring(0, length - 3) + '...';
+};

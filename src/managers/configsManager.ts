@@ -15,25 +15,44 @@ export class ConfigsManager {
     public getDefaultConfigs(guild: string): configsDb {
         const configs = {
             guild_id: guild
-        }
-        Object.keys(configsData).forEach((x: keyof typeof configsData) => configs[x] = configsData[x].default)
+        };
+        Object.keys(configsData).forEach((x: keyof typeof configsData) => (configs[x] = configsData[x].default));
 
-        return configs as configsDb
+        return configs as configsDb;
     }
     public getConfs(guild: string) {
-        return this.cache.get(guild) ?? this.getDefaultConfigs(guild)
+        return this.cache.get(guild) ?? this.getDefaultConfigs(guild);
     }
     public setConfig<Key extends keyof configs<false>>(guild: string, config: Key, state: configs<false>[Key]) {
         const data = this.getConfs(guild);
         data[config] = state;
 
         this.cache.set(data.guild_id, data);
-        const mysqlData = typeof state === 'boolean' ? (state ? '1' : '0') : typeof state === 'string' ? sqlise(state) : state;
+        const mysqlData =
+            typeof state === 'boolean' ? (state ? '1' : '0') : typeof state === 'string' ? sqlise(state) : state;
 
-        query(`UPDATE ${DatabaseTables.Configs} SET ${config}="${mysqlData}"`)
+        const configs = this.getConfs(guild);
+        query(
+            `INSERT INTO ${DatabaseTables.Configs} ( ${Object.keys(configs).join(', ')} ) VALUES ( ${Object.keys(
+                configs
+            )
+                .map(
+                    (x) =>
+                        `"${
+                            typeof configs[x] === 'boolean'
+                                ? configs[x]
+                                    ? '1'
+                                    : '0'
+                                : typeof configs[x] === 'string'
+                                ? sqlise(configs[x])
+                                : configs[x]
+                        }"`
+                )
+                .join(', ')} ) ON DUPLICATE KEY UPDATE ${config}="${mysqlData}"`
+        );
     }
     public getConfig<Key extends keyof configs<false>>(guild: string, key: Key): configs<false>[Key] {
-        return this.getConfs(guild)[key]
+        return this.getConfs(guild)[key];
     }
 
     private bool(inp: string): boolean {
@@ -52,11 +71,13 @@ export class ConfigsManager {
         });
     }
     private async checkDb() {
-        await query(`CREATE TABLE IF NOT EXISTS ${DatabaseTables.Configs} ( guild_id VARCHAR(255) NOT NULL PRIMARY KEY, gban TINYINT(1) NOT NULL DEFAULT '1', raidmode TINYINT(1) NOT NULL DEFAULT '0' )`)
-        return true
+        await query(
+            `CREATE TABLE IF NOT EXISTS ${DatabaseTables.Configs} ( guild_id VARCHAR(255) NOT NULL PRIMARY KEY, gban TINYINT(1) NOT NULL DEFAULT '1', raidmode TINYINT(1) NOT NULL DEFAULT '0' )`
+        );
+        return true;
     }
     private async init() {
-        await this.checkDb()
-        this.fillCache()
+        await this.checkDb();
+        this.fillCache();
     }
 }
