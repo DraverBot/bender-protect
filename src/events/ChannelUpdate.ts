@@ -12,13 +12,15 @@ export default new AmethystEvent('channelUpdate', async (bef, aft) => {
     const reedit = async () => {
         const data = bef.toJSON() as any;
         if (aft.type !== ChannelType.GuildCategory && bef.type !== ChannelType.GuildCategory) {
-            await aft.edit({
-                ...data,
-                name: bef.name,
-                permissionOverwrites: bef.permissionOverwrites.cache,
-                rateLimitPerUser: data.rateLimitPerUser,
-                position: bef.rawPosition
-            }).catch(log4js.trace);
+            await aft
+                .edit({
+                    ...data,
+                    name: bef.name,
+                    permissionOverwrites: bef.permissionOverwrites.cache,
+                    rateLimitPerUser: data.rateLimitPerUser,
+                    position: bef.rawPosition
+                })
+                .catch(log4js.trace);
         } else {
             await aft.edit({
                 ...data,

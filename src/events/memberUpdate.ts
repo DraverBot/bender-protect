@@ -18,16 +18,18 @@ export default new AmethystEvent('guildMemberUpdate', async (bef, aft) => {
                 deaf: bef.voice?.deaf,
                 mute: bef?.voice?.mute,
                 channel: bef?.voice?.channel,
-                reason: "Auto-mod by Bender Protect"
-            })
+                reason: 'Auto-mod by Bender Protect'
+            });
         } else {
-            await aft.edit({
-                communicationDisabledUntil: bef.communicationDisabledUntil,
-                flags: bef.flags,
-                nick: bef.nickname ?? null,
-                roles: bef.roles.cache,
-                reason: "Auto-mod by Bender Protect"
-            }).catch(log4js.trace)
+            await aft
+                .edit({
+                    communicationDisabledUntil: bef.communicationDisabledUntil,
+                    flags: bef.flags,
+                    nick: bef.nickname ?? null,
+                    roles: bef.roles.cache,
+                    reason: 'Auto-mod by Bender Protect'
+                })
+                .catch(log4js.trace);
         }
     };
     if (!valid) return reedit();

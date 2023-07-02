@@ -8,10 +8,12 @@ export default new AmethystEvent('roleUpdate', async (bef, aft) => {
 
     const valid = await CheckUserAction.process({ guild, event: 'RoleUpdate', targetId: aft.id });
     const reedit = async () => {
-        await aft.edit({
-            ...bef,
-            reason: 'Auto-mod by Bender Protect'
-        }).catch(() => {});
+        await aft
+            .edit({
+                ...bef,
+                reason: 'Auto-mod by Bender Protect'
+            })
+            .catch(() => {});
     };
     if (!valid) return reedit();
 
