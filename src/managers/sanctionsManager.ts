@@ -18,7 +18,7 @@ export class SanctionManager {
         return (
             this.cache.get(guildId)?.sanctions ??
             Object.keys(sanctionsData).map((x: keyof typeof sanctionsData) => ({
-                name: SanctionName[x],
+                name: x,
                 enabled: sanctionsData[x].enabled,
                 sanction: sanctionsData[x].default,
                 time: sanctionsData[x].time

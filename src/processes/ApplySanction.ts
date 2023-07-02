@@ -20,7 +20,11 @@ export default new Process(
         );
         if (!enabled) return;
 
-        const member = user instanceof GuildMember ? user : guild.members.cache.get(user.id);
+        const member =
+            user instanceof GuildMember
+                ? user
+                : guild.members.cache.get(user.id) ?? (await guild.members.fetch(user).catch(() => {}));
+        if (!member) return console.log('No user');
 
         if (sanction === 'ban') {
             member.ban({ reason: `Auto-sanction by Bender protect` }).catch(() => {});
