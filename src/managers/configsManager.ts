@@ -23,7 +23,11 @@ export class ConfigsManager {
     public getConfs(guild: string) {
         return this.cache.get(guild) ?? this.getDefaultConfigs(guild);
     }
-    public setConfig<Key extends keyof Omit<configsDb<false>, 'guild_id'>>(guild: string, config: Key, state: configsDb<false>[Key]) {
+    public setConfig<Key extends keyof Omit<configsDb<false>, 'guild_id'>>(
+        guild: string,
+        config: Key,
+        state: configsDb<false>[Key]
+    ) {
         const data = this.getConfs(guild);
         data[config] = state;
 

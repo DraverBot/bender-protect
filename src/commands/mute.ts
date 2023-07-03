@@ -1,23 +1,23 @@
-import { AmethystCommand, log4js, preconditions } from "amethystjs";
-import { ApplicationCommandOptionType, GuildMember } from "discord.js";
-import { addModLog, displayDate, pingUser, secondsToWeeks } from "../utils/toolbox";
-import whitelisted from "../preconditions/whitelisted";
-import perms from "../preconditions/perms";
-import { classic, memberBot } from "../utils/embeds";
+import { AmethystCommand, log4js, preconditions } from 'amethystjs';
+import { ApplicationCommandOptionType, GuildMember } from 'discord.js';
+import { addModLog, displayDate, pingUser, secondsToWeeks } from '../utils/toolbox';
+import whitelisted from '../preconditions/whitelisted';
+import perms from '../preconditions/perms';
+import { classic, memberBot } from '../utils/embeds';
 
 export default new AmethystCommand({
     name: 'mute',
-    description: "Mute une personne du serveur",
+    description: 'Mute une personne du serveur',
     options: [
         {
             name: 'utilisateur',
-            description: "Utilisateur à réduire au silence",
+            description: 'Utilisateur à réduire au silence',
             type: ApplicationCommandOptionType.User,
             required: true
         },
         {
             name: 'durée',
-            description: "Durée de la réduction au silence",
+            description: 'Durée de la réduction au silence',
             type: ApplicationCommandOptionType.Integer,
             required: true,
             choices: [
@@ -112,22 +112,32 @@ export default new AmethystCommand({
         }
     ],
     preconditions: [preconditions.GuildOnly, whitelisted, perms]
-}).setChatInputRun(async({ interaction, options }) => {
-    const member = options.getMember('utilisateur') as GuildMember
-    const duration = options.getInteger('durée')
+}).setChatInputRun(async ({ interaction, options }) => {
+    const member = options.getMember('utilisateur') as GuildMember;
+    const duration = options.getInteger('durée');
     const reason = options.getString('raison') ?? `Pas de raison (${secondsToWeeks(duration)})`;
 
-    if (member.user.bot) return interaction.reply({
-        embeds: [ memberBot(interaction.user, member) ]
-    }).catch(log4js.trace)
+    if (member.user.bot)
+        return interaction
+            .reply({
+                embeds: [memberBot(interaction.user, member)]
+            })
+            .catch(log4js.trace);
 
-    const end = Date.now() + (duration * 1000)
-    await interaction.deferReply().catch(log4js.trace)
-    const res = await member.disableCommunicationUntil(end, reason).catch(log4js.trace)
+    const end = Date.now() + duration * 1000;
+    await interaction.deferReply().catch(log4js.trace);
+    const res = await member.disableCommunicationUntil(end, reason).catch(log4js.trace);
 
-    if (!res) return interaction.editReply({
-        embeds: [classic(interaction.user, { denied: true }).setTitle("Mute échoué").setDescription(`Je n'ai pas pu muter ${pingUser(member)}`)]
-    }).catch(log4js.trace)
+    if (!res)
+        return interaction
+            .editReply({
+                embeds: [
+                    classic(interaction.user, { denied: true })
+                        .setTitle('Mute échoué')
+                        .setDescription(`Je n'ai pas pu muter ${pingUser(member)}`)
+                ]
+            })
+            .catch(log4js.trace);
 
     await addModLog({
         guild: interaction.guild,
@@ -135,9 +145,15 @@ export default new AmethystCommand({
         mod_id: interaction.user.id,
         type: 'Mute',
         reason
-    }).catch(log4js.trace)
+    }).catch(log4js.trace);
 
-    interaction.editReply({
-        embeds:[ classic(interaction.user, { accentColor: true }).setTitle("Réduction au silence").setDescription(`${pingUser(member)} a été réduit au silence jusqu'a ${displayDate(end, true)}`) ]
-    }).catch(log4js.trace)
-})
+    interaction
+        .editReply({
+            embeds: [
+                classic(interaction.user, { accentColor: true })
+                    .setTitle('Réduction au silence')
+                    .setDescription(`${pingUser(member)} a été réduit au silence jusqu'a ${displayDate(end, true)}`)
+            ]
+        })
+        .catch(log4js.trace);
+});

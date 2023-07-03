@@ -42,4 +42,4 @@ export type checkPermsOptions = {
      * Returns false if the member is not moderatable
      */
     checkModeratable?: boolean;
-}
+};

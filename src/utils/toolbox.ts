@@ -26,8 +26,8 @@ import { ButtonIds } from '../typings/client';
 import { log4js, waitForInteraction } from 'amethystjs';
 import { classic } from './embeds';
 import { query } from './query';
-import { addModLog as addModLogType } from '../typings/draver'
-import * as embeds from '../utils/embeds'
+import { addModLog as addModLogType } from '../typings/draver';
+import * as embeds from '../utils/embeds';
 
 export const util = <Key extends keyof typeof utils, Type = (typeof utils)[Key]>(key: Key): Type => {
     return utils[key] as Type;
@@ -240,7 +240,7 @@ export const secondsToWeeks = (time: number) => {
 
     const format = [];
     superior.forEach((sup) => {
-        format.push(`${(sup.value.toLocaleString('fr'))} ${sup.name}${plurial(sup.value)}`);
+        format.push(`${sup.value.toLocaleString('fr')} ${sup.name}${plurial(sup.value)}`);
     });
     let str = '';
 
@@ -252,7 +252,7 @@ export const secondsToWeeks = (time: number) => {
 export const removeKey = <T, K extends keyof T>(obj: T, key: K): Omit<T, K> => {
     const { [key]: _, ...rest } = obj;
     return rest;
-}
+};
 export const addModLog = ({
     guild,
     reason,
@@ -269,13 +269,14 @@ export const addModLog = ({
                 guild.id
             }", "${mod_id}", "${member_id ?? ''}", "${Date.now()}", "${type}", "${sqlise(
                 reason
-            )}", "${proof}", "${self}", "0", "0" )`
-        , 'draver');
+            )}", "${proof}", "${self}", "0", "0" )`,
+            'draver'
+        );
 
         if (!rs) return resolve(false);
         resolve(true);
     });
-}
+};
 export const checkPerms = ({
     member,
     mod,
@@ -305,7 +306,7 @@ export const checkPerms = ({
     const modOwner = mod.id === mod.guild.ownerId;
     if (ownerByPass === true && modOwner) return true;
     if (checkBot && member.user.bot) return send('memberBot');
-    if (checkModeratable && !member.moderatable) return send("memberNotModeratable")
+    if (checkModeratable && !member.moderatable) return send('memberNotModeratable');
     if (checkSelf && member.id === mod.id) return send('selfMod');
     if (checkModPosition && !modOwner && member.roles.highest.position >= mod.roles.highest.position)
         return send('memberTooHigh');
@@ -313,11 +314,11 @@ export const checkPerms = ({
         return send('memberTooHighClient');
     if (checkOwner && member.id === member.guild.ownerId && !modOwner) return send('memberOwner');
     return true;
-}
+};
 export const displayDate = (date: DateResolvable, divide?: boolean) => {
     const milliseconds = typeof date === 'number' ? date : typeof date === 'string' ? parseInt(date) : date.getTime();
 
     let value = milliseconds;
-    if (!!divide) value = Math.floor(value / 1000)
-    return `<t:${value}:F> ( <t:${value}:R> )`
-}
+    if (!!divide) value = Math.floor(value / 1000);
+    return `<t:${value}:F> ( <t:${value}:R> )`;
+};

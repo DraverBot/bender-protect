@@ -1,4 +1,4 @@
-import { Guild } from "discord.js";
+import { Guild } from 'discord.js';
 
 export type BenderAPIType =
     | 'Mute'

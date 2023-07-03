@@ -27,7 +27,7 @@ const base = (
 
     return embed;
 };
-export const denied = (user: User) => base(user, { denied: true })
+export const denied = (user: User) => base(user, { denied: true });
 
 export const classic = base;
 export const needWhitelist = (user: User) =>
@@ -63,9 +63,7 @@ export const cooldown = (user: User, cooldown: number) =>
         .setTitle('Cooldown')
         .setDescription(`Vous avez un cooldown de ${cooldown.toFixed(1)} secondes sur cette commande`);
 export const guildOnly = (user: User) =>
-    denied(user)
-        .setTitle('Serveur uniquement')
-        .setDescription(`Cette commande n'est utilisable que sur un serveur`);
+    denied(user).setTitle('Serveur uniquement').setDescription(`Cette commande n'est utilisable que sur un serveur`);
 export const DMOnly = (user: User) =>
     denied(user)
         .setTitle('Message privés uniquement')
@@ -86,9 +84,7 @@ export const paginationInvalidPage = (user: User, max: number) =>
         .setDescription(`Veuillez spécifier un **nombre** valide compris entre **1** et **${max.toLocaleString()}**`);
 export const cancel = () => new EmbedBuilder().setTitle('💡 Annulé').setColor('Yellow');
 export const unAllowedAction = (user: User, guild: Guild) =>
-    denied(user)
-        .setTitle('Action interdite')
-        .setDescription(`Vous n'êtes pas autorisé à faire ça sur ${guild.name}`);
+    denied(user).setTitle('Action interdite').setDescription(`Vous n'êtes pas autorisé à faire ça sur ${guild.name}`);
 export const raidmode = (user: User, guild: Guild) =>
     base(user, { accentColor: true })
         .setTitle('Raidmode')
@@ -111,12 +107,51 @@ export const invalidNumber = (user: User, max: number, min: number) =>
                     : `entre ${min.toLocaleString('fr')} et ${max.toLocaleString('fr')}`
             }`
         );
-export const timeQuestion = (user: User) => base(user, { question: true }).setTitle("Durée").setDescription(`Quelle est la durée ?\nRépondez dans le chat par un nombre suivit d'une de ces unites : \`s\` pour secondes, \`m\` pour minutes, \`h\` pour heures et \`d\` pour jours\nRépondez par \`cancel\` pour annuler`)
-export const invalidTime = (user: User) => denied(user).setTitle("Durée invalide").setDescription(`Merci de préciser une durée valide.\nUtilisez un nombre suvit d'une de ces unités :\n${[['s', 'secondes'], ['m', 'minutes'], ['h', 'heures'], ['d', 'jours']].map(x => `- \`${x[0]}\` pour les ${x[1]}`).join('\n')}\nExemple : \`2d\` pour deux jours`)
-export const memberNotModeratable = (user: User) => denied(user).setTitle("Membre non-modérable").setDescription(`Je ne peux pas effectuer d'actions de modération sur ce membre`)
-export const memberBot = (user: User, member: GuildMember) => denied(user).setTitle("Bot").setDescription(`${pingUser(member)} est un bot.\nJe ne peux pas effectuer cette action sur un robot`)
-export const selfMod = (user: User) => denied(user).setTitle("Auto-modération").setDescription(`Vous ne pouvez pas effectuer cette action sur vous-même`)
-export const memberTooHigh = (user: User, member: GuildMember) => denied(user).setTitle("Membre trop haut").setDescription(`${pingUser(member)} est supérieur ou égal à vous dans la hiérarchie des rôles`)
-export const memberTooHighClient = (user: User, member: GuildMember) => denied(user).setTitle("Membre trop haut").setDescription(`${pingUser(member)} est supérieur ou égal à moi dans la hiérarchie des rôles`)
-export const memberOwner = (user: User, member: GuildMember) => denied(user).setTitle("Propriétaire").setDescription(`${pingUser(member)} est le propriétaire du serveur, je ne peux pas faire ça sur le propriétaire.`)
-export const wait = (user: User) => base(user).setColor('#84923B').setTitle("Patientez").setDescription(`<a:chargement:839497157195071498> Veuillez patienter quelques instants...`)
+export const timeQuestion = (user: User) =>
+    base(user, { question: true })
+        .setTitle('Durée')
+        .setDescription(
+            `Quelle est la durée ?\nRépondez dans le chat par un nombre suivit d'une de ces unites : \`s\` pour secondes, \`m\` pour minutes, \`h\` pour heures et \`d\` pour jours\nRépondez par \`cancel\` pour annuler`
+        );
+export const invalidTime = (user: User) =>
+    denied(user)
+        .setTitle('Durée invalide')
+        .setDescription(
+            `Merci de préciser une durée valide.\nUtilisez un nombre suvit d'une de ces unités :\n${[
+                ['s', 'secondes'],
+                ['m', 'minutes'],
+                ['h', 'heures'],
+                ['d', 'jours']
+            ]
+                .map((x) => `- \`${x[0]}\` pour les ${x[1]}`)
+                .join('\n')}\nExemple : \`2d\` pour deux jours`
+        );
+export const memberNotModeratable = (user: User) =>
+    denied(user)
+        .setTitle('Membre non-modérable')
+        .setDescription(`Je ne peux pas effectuer d'actions de modération sur ce membre`);
+export const memberBot = (user: User, member: GuildMember) =>
+    denied(user)
+        .setTitle('Bot')
+        .setDescription(`${pingUser(member)} est un bot.\nJe ne peux pas effectuer cette action sur un robot`);
+export const selfMod = (user: User) =>
+    denied(user).setTitle('Auto-modération').setDescription(`Vous ne pouvez pas effectuer cette action sur vous-même`);
+export const memberTooHigh = (user: User, member: GuildMember) =>
+    denied(user)
+        .setTitle('Membre trop haut')
+        .setDescription(`${pingUser(member)} est supérieur ou égal à vous dans la hiérarchie des rôles`);
+export const memberTooHighClient = (user: User, member: GuildMember) =>
+    denied(user)
+        .setTitle('Membre trop haut')
+        .setDescription(`${pingUser(member)} est supérieur ou égal à moi dans la hiérarchie des rôles`);
+export const memberOwner = (user: User, member: GuildMember) =>
+    denied(user)
+        .setTitle('Propriétaire')
+        .setDescription(
+            `${pingUser(member)} est le propriétaire du serveur, je ne peux pas faire ça sur le propriétaire.`
+        );
+export const wait = (user: User) =>
+    base(user)
+        .setColor('#84923B')
+        .setTitle('Patientez')
+        .setDescription(`<a:chargement:839497157195071498> Veuillez patienter quelques instants...`);

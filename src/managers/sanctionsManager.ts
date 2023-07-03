@@ -45,16 +45,14 @@ export class SanctionManager {
 
     private update(guild: string) {
         return query(
-            `INSERT INTO ${DatabaseTables.Sanctions} ( guild_id, sanctions ) VALUES ('${guild}', '${JSON.stringify(this.getList(guild))}') ON DUPLICATE KEY UPDATE sanctions='${JSON.stringify(
+            `INSERT INTO ${DatabaseTables.Sanctions} ( guild_id, sanctions ) VALUES ('${guild}', '${JSON.stringify(
                 this.getList(guild)
-            )}'`
+            )}') ON DUPLICATE KEY UPDATE sanctions='${JSON.stringify(this.getList(guild))}'`
         );
     }
     private async checkDb() {
         await query(
-            `CREATE TABLE IF NOT EXISTS ${
-                DatabaseTables.Sanctions
-            } ( guild_id VARCHAR(255) NOT NULL PRIMARY KEY, sanctions LONGTEXT)`
+            `CREATE TABLE IF NOT EXISTS ${DatabaseTables.Sanctions} ( guild_id VARCHAR(255) NOT NULL PRIMARY KEY, sanctions LONGTEXT)`
         );
 
         return;

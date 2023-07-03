@@ -8,7 +8,7 @@ export default new AmethystEvent('guildBanRemove', async (ban) => {
 
     const valid = await CheckUserAction.process({ guild, event: 'MemberBanRemove', targetId: ban.user.id });
     const unban = async () => {
-        await guild.members.ban(ban.user.id, { reason: "Auto-mod by Bender Protect" }).catch(log4js.trace);
+        await guild.members.ban(ban.user.id, { reason: 'Auto-mod by Bender Protect' }).catch(log4js.trace);
     };
 
     if (!valid) return unban();
