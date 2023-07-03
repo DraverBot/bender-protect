@@ -15,15 +15,18 @@ import {
     Channel,
     Role,
     TextBasedChannel,
-    MessageCreateOptions
+    MessageCreateOptions,
+    DateResolvable
 } from 'discord.js';
 import perms from '../data/perms.json';
 import utils from '../data/utils.json';
-import { permType } from '../typings/tools';
+import { checkPermsOptions, permType } from '../typings/tools';
 import { ButtonIds } from '../typings/client';
 import { log4js, waitForInteraction } from 'amethystjs';
 import { classic } from './embeds';
 import { query } from './query';
+import { addModLog as addModLogType } from '../typings/draver'
+import * as embeds from '../utils/embeds'
 
 export const util = <Key extends keyof typeof utils, Type = (typeof utils)[Key]>(key: Key): Type => {
     return utils[key] as Type;
@@ -248,4 +251,72 @@ export const secondsToWeeks = (time: number) => {
 export const removeKey = <T, K extends keyof T>(obj: T, key: K): Omit<T, K> => {
     const { [key]: _, ...rest } = obj;
     return rest;
+}
+export const addModLog = ({
+    guild,
+    reason,
+    mod_id,
+    member_id,
+    type,
+    proof = ''
+}: addModLogType & { member_id: string | null }): Promise<boolean> => {
+    return new Promise(async (resolve) => {
+        const self = mod_id === guild.client.user.id ? '1' : '0';
+
+        const rs = await query(
+            `INSERT INTO modlogs ( guild_id, mod_id, member_id, date, type, reason, proof, autoMod, deleted, edited ) VALUES ( "${
+                guild.id
+            }", "${mod_id}", "${member_id ?? ''}", "${Date.now()}", "${type}", "${sqlise(
+                reason
+            )}", "${proof}", "${self}", "0", "0" )`
+        , 'draver');
+
+        if (!rs) return resolve(false);
+        resolve(true);
+    });
+}
+export const checkPerms = ({
+    member,
+    mod,
+    checkBot = false,
+    checkClientPosition = true,
+    checkModPosition = true,
+    checkOwner = true,
+    ownerByPass = false,
+    checkSelf,
+    sendErrorMessage = false,
+    interaction = undefined,
+    ephemeral = false,
+    checkModeratable = true
+}: checkPermsOptions) => {
+    type replyKey = keyof typeof embeds;
+    const send = (key: replyKey): false => {
+        if (sendErrorMessage === true && interaction) {
+            systemReply(interaction, {
+                embeds: [(embeds[key] as (user: User, metadata: any) => EmbedBuilder)(interaction.user, { member })],
+                components: [],
+                ephemeral
+            }).catch(log4js.trace);
+        }
+        return false;
+    };
+
+    const modOwner = mod.id === mod.guild.ownerId;
+    if (ownerByPass === true && modOwner) return true;
+    if (checkBot && member.user.bot) return send('memberBot');
+    if (checkModeratable && !member.moderatable) return send("memberNotModeratable")
+    if (checkSelf && member.id === mod.id) return send('selfMod');
+    if (checkModPosition && !modOwner && member.roles.highest.position >= mod.roles.highest.position)
+        return send('memberTooHigh');
+    if (checkClientPosition && member.roles.highest.position >= member.guild.members.me.roles.highest.position)
+        return send('memberTooHighClient');
+    if (checkOwner && member.id === member.guild.ownerId && !modOwner) return send('memberOwner');
+    return true;
+}
+export const displayDate = (date: DateResolvable, divide?: boolean) => {
+    const milliseconds = typeof date === 'number' ? date : typeof date === 'string' ? parseInt(date) : date.getTime();
+
+    let value = milliseconds;
+    if (!!divide) value = Math.floor(value / 1000)
+    return `<t:${value}:F> ( <t:${value}:R> )`
 }

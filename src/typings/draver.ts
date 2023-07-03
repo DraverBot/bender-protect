@@ -1,3 +1,5 @@
+import { Guild } from "discord.js";
+
 export type BenderAPIType =
     | 'Mute'
     | 'Unmute'
@@ -38,4 +40,51 @@ export type BenderAPIOptions<T extends BenderAPIType> = {
     guild: string;
     user: string;
     data: BenderAPIOptionsData<T>;
+};
+export enum modActionType {
+    Mute = 'Réduction au silence',
+    Unmute = 'Retrait de réduction au silence',
+    Ban = 'Bannissement',
+    Unban = 'Débannissement',
+    Kick = 'Expulsion',
+    Warn = 'Avertissement',
+    Unwarn = "Retrait d'avertissement",
+    EditLog = 'Modification de log',
+    CoinsReset = 'Réinitialisation économique',
+    CoinsAdd = 'Ajout économique',
+    CoinsRemove = 'Retrait économique',
+    LogDeletion = 'Suppression de log',
+    LevelReset = 'Réinitialisation de niveaux',
+    CouponCreated = 'Coupon crée',
+    CouponClaimed = 'Coupon utilisé',
+    CouponDeleted = 'Coupon supprimé',
+    Rename = 'Changement de pseudo',
+    NoteModified = 'Note modifiée',
+    NoteAdded = 'Note ajoutée',
+    NoteRemoved = 'Note retirée',
+    JoinRoleSet = "Rôle d'arrivée configuré",
+    JoinRoleRemoved = "Rôle d'arrivée supprimé",
+    ChannelCreate = 'création de salon',
+    ChannelDelete = 'suppression de salon',
+    ChannelEdit = 'Modification de salon',
+    WebhookCreationFailed = 'Échec de création de webhook',
+    RoleCreate = 'Création de rôle',
+    RoleEdit = 'Modification de rôle',
+    RoleDelete = 'Supression de rôle',
+    MessageBulkDelete = 'Suppression de messages',
+    Censor = 'Censuration',
+    Tempban = 'Bannissement temporaire'
+}
+export type addModLog = {
+    guild: Guild;
+    reason: string;
+    member_id: string;
+    mod_id: string;
+    type: keyof typeof modActionType;
+    /**
+     * Image URL
+     *
+     * Can be null
+     */
+    proof?: string;
 };
