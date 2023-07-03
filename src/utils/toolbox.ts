@@ -195,7 +195,7 @@ export const resize = (str: string, length = 100) => {
 
     return str.substring(0, length - 3) + '...';
 };
-export const secondsToWeeks = (time: number) => {
+export const secondsToWeeks = (time: number, divide?: boolean) => {
     let seconds = 0;
     let minutes = 0;
     let hours = 0;
@@ -203,7 +203,7 @@ export const secondsToWeeks = (time: number) => {
     let weeks = 0;
     let years = 0;
 
-    for (let i = 0; i < time; i++) {
+    for (let i = 0; i < (!!divide ? Math.floor(time / 1000) : time); i++) {
         seconds++;
         if (seconds === 60) {
             seconds = 0;

@@ -3,7 +3,7 @@ import { GuildMember } from 'discord.js';
 import { checkPerms } from '../utils/toolbox';
 
 export default new Precondition('checkPerms').setChatInputRun(({ interaction, options, client }) => {
-    const member = options.getMember('utilisateur') as GuildMember;
+    const member = (options.getMember('utilisateur') ?? options.getMember('membre')) as GuildMember;
 
     if (!member) return { ok: true, interaction, type: 'chatInput' };
     if (
