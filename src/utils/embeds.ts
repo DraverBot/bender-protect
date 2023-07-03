@@ -13,8 +13,8 @@ const base = (
 ) => {
     const embed = new EmbedBuilder({
         footer: {
-            text: ((options.footerText ?? 'user') === 'user' ? user : user.client.user).username,
-            iconURL: ((options.iconOption ?? 'client') === 'client' ? user.client.user : user).displayAvatarURL({
+            text: ((options?.footerText ?? 'user') === 'user' ? user : user.client.user).username,
+            iconURL: ((options?.iconOption ?? 'client') === 'client' ? user.client.user : user).displayAvatarURL({
                 forceStatic: true
             })
         },
@@ -119,3 +119,4 @@ export const selfMod = (user: User) => denied(user).setTitle("Auto-modération")
 export const memberTooHigh = (user: User, member: GuildMember) => denied(user).setTitle("Membre trop haut").setDescription(`${pingUser(member)} est supérieur ou égal à vous dans la hiérarchie des rôles`)
 export const memberTooHighClient = (user: User, member: GuildMember) => denied(user).setTitle("Membre trop haut").setDescription(`${pingUser(member)} est supérieur ou égal à moi dans la hiérarchie des rôles`)
 export const memberOwner = (user: User, member: GuildMember) => denied(user).setTitle("Propriétaire").setDescription(`${pingUser(member)} est le propriétaire du serveur, je ne peux pas faire ça sur le propriétaire.`)
+export const wait = (user: User) => base(user).setColor('#84923B').setTitle("Patientez").setDescription(`<a:chargement:839497157195071498> Veuillez patienter quelques instants...`)

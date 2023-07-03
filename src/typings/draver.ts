@@ -73,7 +73,8 @@ export enum modActionType {
     RoleDelete = 'Supression de rôle',
     MessageBulkDelete = 'Suppression de messages',
     Censor = 'Censuration',
-    Tempban = 'Bannissement temporaire'
+    Tempban = 'Bannissement temporaire',
+    Nuke = 'Nettoyage de salon'
 }
 export type addModLog = {
     guild: Guild;

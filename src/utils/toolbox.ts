@@ -16,7 +16,8 @@ import {
     Role,
     TextBasedChannel,
     MessageCreateOptions,
-    DateResolvable
+    DateResolvable,
+    BaseChannel
 } from 'discord.js';
 import perms from '../data/perms.json';
 import utils from '../data/utils.json';
@@ -158,7 +159,7 @@ export const plurial = (nb: number | any[], options?: { singular?: string; pluri
     (typeof nb === 'number' ? nb : nb.length) === 1 ? options?.singular ?? '' : options?.plurial ?? 's';
 export const pingUser = (user: string | User | GuildMember) =>
     typeof user === 'string' ? `<@${user}>` : `<@${user.id}>`;
-export const pingChannel = (channel: Channel | string) =>
+export const pingChannel = (channel: BaseChannel | string) =>
     typeof channel === 'string' ? `<#${channel}>` : `<#${channel.id}>`;
 export const pingRole = (role: Role | string) => (typeof role === 'string' ? `<@&${role}>` : `<@&${role.id}>`);
 export const isDraver = (user: User | string) => (typeof user === 'string' ? user : user.id) === process.env.draverId;
