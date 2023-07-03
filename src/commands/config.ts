@@ -1,10 +1,11 @@
-import { AmethystCommand, log4js, preconditions, waitForMessage } from 'amethystjs';
-import { ApplicationCommandOptionType, TextChannel } from 'discord.js';
+import { AmethystCommand, log4js, preconditions, waitForInteraction, waitForMessage } from 'amethystjs';
+import { ApplicationCommandOptionType, ChannelSelectMenuBuilder, ComponentType, Message, StringSelectMenuBuilder, TextChannel, UserSelectMenuBuilder } from 'discord.js';
 import { configs } from '../typings/database';
 import { configsData } from '../data/configsData';
-import { buildButton, confirm, resize, row } from '../utils/toolbox';
+import { buildButton, confirm, pingChannel, pingUser, resize, row, secondsToWeeks } from '../utils/toolbox';
 import { cancel, classic } from '../utils/embeds';
 import waitForNumber from '../processes/waitForNumber';
+import GetTime from '../processes/GetTime';
 
 export default new AmethystCommand({
     name: 'configurer',
@@ -139,6 +140,49 @@ export default new AmethystCommand({
                 ]
             });
         }
+        if (metadata.type === 'time') {
+            const time = await GetTime.process({
+                interaction,
+                user: interaction.user,
+                embed: classic(interaction.user, { question: true }).setTitle("Temps").setDescription(`Sur combien de temps voulez configurer **${metadata.name.toLowerCase()}**`)
+            })
+
+            if (time === "time's up" || time === 'cancel') return interaction.editReply({ embeds: [cancel()] }).catch(log4js.trace)
+
+            interaction.editReply({
+                embeds: [classic(interaction.user, { accentColor: true }).setTitle("Paramètre configuré").setDescription(`Le paramètre **${metadata.name.toLowerCase()}** a été configuré sur ${secondsToWeeks(time, true)}`)]
+            }).catch(log4js.trace)
+        }
+        if (metadata.type === 'channel[]' || metadata.type === 'user[]') {
+            const isUser = metadata.type === 'user[]';
+            const data = client.confs.getConfig(interaction.guild.id, parameter) as string[];
+
+            const msg = await interaction.reply({
+                embeds: [ classic(interaction.user, { accentColor: true })
+                    .setTitle(metadata.name)
+                    .setDescription(`Que voulez-vous faire avec le paramètre **${metadata.name.toLowerCase()}** ?`)
+                ],
+                components: [ row(buildButton({ label: 'Ajouter', style: 'Success', id: 'add' }), buildButton({ label: 'Retirer', style: 'Danger', id: 'remove', disabled: data.length === 0 })) ],
+                fetchReply: true
+            }).catch(log4js.trace) as Message<true>
+
+            if (!msg) return;
+
+            const rep = await waitForInteraction({
+                componentType: ComponentType.Button,
+                user: interaction.user,
+                message: msg
+            }).catch(log4js.trace)
+
+            if (!rep) return interaction.editReply({
+                embeds: [cancel()],
+                components: []
+            }).catch(log4js.trace);
+
+            if (rep.customId === 'remove') {
+                
+            }
+        }
     }
     if (cmd === 'afficher') {
         const parameter = options.getString('paramètre') as undefined | keyof configs<false>;
@@ -159,6 +203,8 @@ export default new AmethystCommand({
                                             : 'désactivé'
                                         : typeof data === 'string'
                                         ? `configuré sur \`\`\`${resize(data, 3000)}\`\`\``
+                                        : metadata.type === 'channel[]' || metadata.type === 'user[]'
+                                        ? (data as string[]).map(metadata.type === 'user[]' ? pingUser : pingChannel).join(' ')
                                         : `configuré sur \`${(data as number).toLocaleString('fr')}\``
                                 }`
                             )

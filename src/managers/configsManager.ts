@@ -49,7 +49,9 @@ export class ConfigsManager {
                                     : '0'
                                 : typeof configs[x] === 'string'
                                 ? sqlise(configs[x])
-                                : configs[x]
+                                : typeof configs[x] === 'number'
+                                ? configs[x]
+                                : JSON.stringify(configs[x])
                         }"`
                 )
                 .join(', ')} ) ON DUPLICATE KEY UPDATE ${config}="${mysqlData}"`
@@ -73,13 +75,16 @@ export class ConfigsManager {
                 raidmode: this.bool(x.raidmode),
                 antispam: this.bool(x.antispam),
                 antispam_count: x.antispam_count,
-                antispam_time: parseInt(x.antispam_time)
+                antispam_time: parseInt(x.antispam_time),
+                antispam_bot: this.bool(x.antispam_bot),
+                antispam_ignored_channels: JSON.parse(x.antispam_ignored_channels),
+                antispam_ignored_users: JSON.parse(x.antispam_ignored_users)
             });
         });
     }
     private async checkDb() {
         await query(
-            `CREATE TABLE IF NOT EXISTS ${DatabaseTables.Configs} ( guild_id VARCHAR(255) NOT NULL PRIMARY KEY, gban TINYINT(1) NOT NULL DEFAULT '1', raidmode TINYINT(1) NOT NULL DEFAULT '0', antispam TINYINT(1) NOT NULL DEFAULT '0', antispam_count INTEGER(255) NOT NULL DEFAULT '10', antispam_time VARCHAR(255) NOT NULL DEFAULT '5000' )`
+            `CREATE TABLE IF NOT EXISTS ${DatabaseTables.Configs} ( guild_id VARCHAR(255) NOT NULL PRIMARY KEY, gban TINYINT(1) NOT NULL DEFAULT '1', raidmode TINYINT(1) NOT NULL DEFAULT '0', antispam TINYINT(1) NOT NULL DEFAULT '0', antispam_count INTEGER(255) NOT NULL DEFAULT '10', antispam_time VARCHAR(255) NOT NULL DEFAULT '5000', antispam_bot TINYTINT(1) NOT NULL DEFAULT '1', antispam_ignored_channels LONGTEXT, antispam_ignored_users LONGTEXT )`
         );
         return true;
     }

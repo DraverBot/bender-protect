@@ -1,9 +1,9 @@
 import { configs } from '../typings/database';
 
-export type configType = 'boolean' | 'string' | 'number' | 'time';
+export type configType = 'boolean' | 'string' | 'number' | 'time' | 'user[]' | 'channel[]';
 export const configsData: Record<
     keyof configs<true>,
-    { name: string; default: string | number | boolean; description: string; type: configType }
+    { name: string; default: string | number | boolean | []; description: string; type: configType }
 > = {
     gban: {
         name: 'GBan',
@@ -32,7 +32,25 @@ export const configsData: Record<
     antispam_time: {
         name: "Temps de l'antispam",
         description: "Temps à partir duquel doit se déclencher l'antispam",
-        type: 'number',
+        type: 'time',
         default: 5000
+    },
+    antispam_bot: {
+        name: "Antispam-bot",
+        description: "L'antispam marche contre les bots",
+        type: 'boolean',
+        default: true
+    },
+    antispam_ignored_channels: {
+        name: "Salons ignorés de l'antispam",
+        description: "Salons que l'antispam ignore",
+        type: 'channel[]',
+        default: []
+    },
+    antispam_ignored_users: {
+        name: "Utilisateurs ignorés par l'antispam",
+        description: "Utilisateurs que l'antispam ignore",
+        type: 'user[]',
+        default: []
     }
 };
