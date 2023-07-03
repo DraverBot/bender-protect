@@ -57,5 +57,8 @@ export type tempbans = {
 export type configs<Raw extends boolean> = {
     gban: If<Raw, string, boolean>;
     raidmode: If<Raw, string, boolean>;
+    antispam: If<Raw, string, boolean>
+    antispam_time: If<Raw, string, number>
+    antispam_count: number;
 };
 export type configsDb<Raw extends boolean = false> = configs<Raw> & { guild_id: string };

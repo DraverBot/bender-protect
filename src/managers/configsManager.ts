@@ -23,7 +23,7 @@ export class ConfigsManager {
     public getConfs(guild: string) {
         return this.cache.get(guild) ?? this.getDefaultConfigs(guild);
     }
-    public setConfig<Key extends keyof configs<false>>(guild: string, config: Key, state: configs<false>[Key]) {
+    public setConfig<Key extends keyof Omit<configsDb<false>, 'guild_id'>>(guild: string, config: Key, state: configsDb<false>[Key]) {
         const data = this.getConfs(guild);
         data[config] = state;
 
@@ -66,13 +66,16 @@ export class ConfigsManager {
             this.cache.set(x.guild_id, {
                 ...x,
                 gban: this.bool(x.gban),
-                raidmode: this.bool(x.raidmode)
+                raidmode: this.bool(x.raidmode),
+                antispam: this.bool(x.antispam),
+                antispam_count: x.antispam_count,
+                antispam_time: parseInt(x.antispam_time)
             });
         });
     }
     private async checkDb() {
         await query(
-            `CREATE TABLE IF NOT EXISTS ${DatabaseTables.Configs} ( guild_id VARCHAR(255) NOT NULL PRIMARY KEY, gban TINYINT(1) NOT NULL DEFAULT '1', raidmode TINYINT(1) NOT NULL DEFAULT '0' )`
+            `CREATE TABLE IF NOT EXISTS ${DatabaseTables.Configs} ( guild_id VARCHAR(255) NOT NULL PRIMARY KEY, gban TINYINT(1) NOT NULL DEFAULT '1', raidmode TINYINT(1) NOT NULL DEFAULT '0', antispam TINYINT(1) NOT NULL DEFAULT '0', antispam_count INTEGER(255) NOT NULL DEFAULT '10', antispam_time VARCHAR(255) NOT NULL DEFAULT '5000' )`
         );
         return true;
     }
