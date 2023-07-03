@@ -13,6 +13,7 @@ const client = new AmethystClient(
             'GuildModeration',
             'GuildWebhooks',
             'GuildMembers',
+            'GuildMessages',
             'MessageContent'
         ],
         partials: [Partials.Channel, Partials.GuildMember, Partials.Message]
@@ -24,7 +25,8 @@ const client = new AmethystClient(
         autocompleteListenersFolder: './dist/autocompletes',
         preconditionsFolder: './dist/preconditions',
         debug: true,
-        token: process.env.token
+        token: process.env.token,
+        strictPrefix: true
     }
 );
 

@@ -110,3 +110,5 @@ export const invalidNumber = (user: User, max: number, min: number) =>
                     : `entre ${min.toLocaleString('fr')} et ${max.toLocaleString('fr')}`
             }`
         );
+export const timeQuestion = (user: User) => base(user, { question: true }).setTitle("Durée").setDescription(`Quelle est la durée ?\nRépondez dans le chat par un nombre suivit d'une de ces unites : \`s\` pour secondes, \`m\` pour minutes, \`h\` pour heures et \`d\` pour jours\nRépondez par \`cancel\` pour annuler`)
+export const invalidTime = (user: User) => base(user, { denied: true }).setTitle("Durée invalide").setDescription(`Merci de préciser une durée valide.\nUtilisez un nombre suvit d'une de ces unités :\n${[['s', 'secondes'], ['m', 'minutes'], ['h', 'heures'], ['d', 'jours']].map(x => `- \`${x[0]}\` pour les ${x[1]}`).join('\n')}\nExemple : \`2d\` pour deux jours`)

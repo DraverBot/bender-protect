@@ -45,18 +45,16 @@ export class SanctionManager {
 
     private update(guild: string) {
         return query(
-            `UPDATE ${DatabaseTables.Sanctions} SET sanctions='${JSON.stringify(
+            `INSERT INTO ${DatabaseTables.Sanctions} ( guild_id, sanctions ) VALUES ('${guild}', '${JSON.stringify(this.getList(guild))}') ON DUPLICATE KEY UPDATE sanctions='${JSON.stringify(
                 this.getList(guild)
-            )}' WHERE guild_id='${guild}'`
+            )}'`
         );
     }
     private async checkDb() {
         await query(
             `CREATE TABLE IF NOT EXISTS ${
                 DatabaseTables.Sanctions
-            } ( guild_id VARCHAR(255) NOT NULL PRIMARY KEY, ${Object.keys(sanctionsData)
-                .map((x) => `${x} LONGTEXT`)
-                .join(', ')} )`
+            } ( guild_id VARCHAR(255) NOT NULL PRIMARY KEY, sanctions LONGTEXT)`
         );
 
         return;
@@ -66,7 +64,10 @@ export class SanctionManager {
         if (!data) return log4js.trace('No data for sanction manager');
 
         data.forEach((x) => {
-            this.cache.set(x.guild_id, JSON.parse(x.sanctions));
+            this.cache.set(x.guild_id, {
+                sanctions: JSON.parse(x.sanctions),
+                guild_id: x.guild_id
+            });
         });
     }
     private async init() {
