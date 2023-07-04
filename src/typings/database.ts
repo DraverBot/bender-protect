@@ -63,5 +63,7 @@ export type configs<Raw extends boolean> = {
     antispam_bot: If<Raw, string, boolean>;
     antispam_ignored_channels: If<Raw, string, string[]>;
     antispam_ignored_users: If<Raw, string, string[]>;
+    antispam_mute_time: If<Raw, string, number>
+    antispam_delete_messages: If<Raw, string, boolean>;
 };
 export type configsDb<Raw extends boolean = false> = configs<Raw> & { guild_id: string };

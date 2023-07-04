@@ -51,8 +51,9 @@ export class ConfigsManager {
                 configs
             )
                 .map(
-                    (x) =>
-                        `${quote}${
+                    (x) => {
+                        const xQuote = configsData[x]?.type?.includes('[') ? "'" : '"';
+                        return `${xQuote}${
                             typeof configs[x] === 'boolean'
                                 ? configs[x]
                                     ? '1'
@@ -62,7 +63,8 @@ export class ConfigsManager {
                                 : typeof configs[x] === 'number'
                                 ? configs[x]
                                 : JSON.stringify(configs[x])
-                        }${quote}`
+                        }${xQuote}`
+                    }
                 )
                 .join(', ')} ) ON DUPLICATE KEY UPDATE ${config}=${quote}${mysqlData}${quote}`
         );
@@ -71,8 +73,8 @@ export class ConfigsManager {
         return this.getConfs(guild)[key];
     }
 
-    private bool(inp: string): boolean {
-        return inp === '1';
+    private bool(inp: string | number): boolean {
+        return inp.toString() === '1';
     }
     private async fillCache() {
         const data = await query<configsDb<true>>(`SELECT * FROM ${DatabaseTables.Configs}`);
@@ -88,13 +90,15 @@ export class ConfigsManager {
                 antispam_time: parseInt(x.antispam_time),
                 antispam_bot: this.bool(x.antispam_bot),
                 antispam_ignored_channels: JSON.parse(x.antispam_ignored_channels),
-                antispam_ignored_users: JSON.parse(x.antispam_ignored_users)
+                antispam_ignored_users: JSON.parse(x.antispam_ignored_users),
+                antispam_mute_time: parseInt(x.antispam_mute_time),
+                antispam_delete_messages: this.bool(x.antispam_delete_messages)
             });
         });
     }
     private async checkDb() {
         await query(
-            `CREATE TABLE IF NOT EXISTS ${DatabaseTables.Configs} ( guild_id VARCHAR(255) NOT NULL PRIMARY KEY, gban TINYINT(1) NOT NULL DEFAULT '1', raidmode TINYINT(1) NOT NULL DEFAULT '0', antispam TINYINT(1) NOT NULL DEFAULT '0', antispam_count INTEGER(255) NOT NULL DEFAULT '10', antispam_time VARCHAR(255) NOT NULL DEFAULT '5000', antispam_bot TINYINT(1) NOT NULL DEFAULT '1', antispam_ignored_channels LONGTEXT, antispam_ignored_users LONGTEXT )`
+            `CREATE TABLE IF NOT EXISTS ${DatabaseTables.Configs} ( guild_id VARCHAR(255) NOT NULL PRIMARY KEY, gban TINYINT(1) NOT NULL DEFAULT '1', raidmode TINYINT(1) NOT NULL DEFAULT '0', antispam TINYINT(1) NOT NULL DEFAULT '0', antispam_count INTEGER(255) NOT NULL DEFAULT '10', antispam_time VARCHAR(255) NOT NULL DEFAULT '5000', antispam_bot TINYINT(1) NOT NULL DEFAULT '1', antispam_ignored_channels LONGTEXT, antispam_ignored_users LONGTEXT, antispam_mute_time VARCHAR(255) NOT NULL DEFAULT '300000', antispam_delete_messages TINYINT(1) NOT NULL DEFAULT '1' )`
         );
         return true;
     }

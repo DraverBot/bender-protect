@@ -9,6 +9,7 @@ const base = (
         iconOption?: 'user' | 'client';
         footerText?: 'user' | 'client';
         question?: boolean;
+        mod?: boolean
     }
 ) => {
     const embed = new EmbedBuilder({
@@ -24,6 +25,7 @@ const base = (
     if (!!options?.accentColor) embed.setColor(util('accentColor'));
     if (!!options?.denied) embed.setColor('#ff0000');
     if (!!options?.question) embed.setColor(util('colorQuestion') as ColorResolvable);
+    if (!!options?.mod) embed.setColor(util('modColor') as ColorResolvable);
 
     return embed;
 };

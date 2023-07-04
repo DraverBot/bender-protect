@@ -52,5 +52,17 @@ export const configsData: Record<
         description: "Utilisateurs que l'antispam ignore",
         type: 'user[]',
         default: []
+    },
+    antispam_mute_time: {
+        name: "Temps de mute de l'antispam",
+        description: "Temps pendant lequel les utilisateurs sont mutés quand ils sont détectés par l'antispam",
+        type: 'time',
+        default: 300000
+    },
+    antispam_delete_messages: {
+        name: "Suppression du spam",
+        description: "Supprime les messages qu'un utilisateur a spammé quand il se fait détecter par l'antispam",
+        type: 'boolean',
+        default: true
     }
 };
