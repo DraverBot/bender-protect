@@ -29,20 +29,30 @@ export class ConfigsManager {
         state: configsDb<false>[Key]
     ) {
         const data = this.getConfs(guild);
+        const metadata = configsData[config];
         data[config] = state;
 
         this.cache.set(data.guild_id, data);
         const mysqlData =
-            typeof state === 'boolean' ? (state ? '1' : '0') : typeof state === 'string' ? sqlise(state) : state;
+            typeof state === 'boolean'
+                ? state
+                    ? '1'
+                    : '0'
+                : metadata.type.includes('[')
+                ? JSON.stringify(state)
+                : typeof state === 'string'
+                ? sqlise(state)
+                : state;
 
         const configs = this.getConfs(guild);
+        const quote = metadata.type.includes('[') ? "'" : '"';
         query(
             `INSERT INTO ${DatabaseTables.Configs} ( ${Object.keys(configs).join(', ')} ) VALUES ( ${Object.keys(
                 configs
             )
                 .map(
                     (x) =>
-                        `"${
+                        `${quote}${
                             typeof configs[x] === 'boolean'
                                 ? configs[x]
                                     ? '1'
@@ -52,9 +62,9 @@ export class ConfigsManager {
                                 : typeof configs[x] === 'number'
                                 ? configs[x]
                                 : JSON.stringify(configs[x])
-                        }"`
+                        }${quote}`
                 )
-                .join(', ')} ) ON DUPLICATE KEY UPDATE ${config}="${mysqlData}"`
+                .join(', ')} ) ON DUPLICATE KEY UPDATE ${config}=${quote}${mysqlData}${quote}`
         );
     }
     public getConfig<Key extends keyof configs<false>>(guild: string, key: Key): configs<false>[Key] {
@@ -84,7 +94,7 @@ export class ConfigsManager {
     }
     private async checkDb() {
         await query(
-            `CREATE TABLE IF NOT EXISTS ${DatabaseTables.Configs} ( guild_id VARCHAR(255) NOT NULL PRIMARY KEY, gban TINYINT(1) NOT NULL DEFAULT '1', raidmode TINYINT(1) NOT NULL DEFAULT '0', antispam TINYINT(1) NOT NULL DEFAULT '0', antispam_count INTEGER(255) NOT NULL DEFAULT '10', antispam_time VARCHAR(255) NOT NULL DEFAULT '5000', antispam_bot TINYTINT(1) NOT NULL DEFAULT '1', antispam_ignored_channels LONGTEXT, antispam_ignored_users LONGTEXT )`
+            `CREATE TABLE IF NOT EXISTS ${DatabaseTables.Configs} ( guild_id VARCHAR(255) NOT NULL PRIMARY KEY, gban TINYINT(1) NOT NULL DEFAULT '1', raidmode TINYINT(1) NOT NULL DEFAULT '0', antispam TINYINT(1) NOT NULL DEFAULT '0', antispam_count INTEGER(255) NOT NULL DEFAULT '10', antispam_time VARCHAR(255) NOT NULL DEFAULT '5000', antispam_bot TINYINT(1) NOT NULL DEFAULT '1', antispam_ignored_channels LONGTEXT, antispam_ignored_users LONGTEXT )`
         );
         return true;
     }

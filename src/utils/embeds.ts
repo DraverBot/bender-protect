@@ -155,29 +155,43 @@ export const wait = (user: User) =>
         .setColor('#84923B')
         .setTitle('Patientez')
         .setDescription(`<a:chargement:839497157195071498> Veuillez patienter quelques instants...`);
-export const askUser = (user: User) => base(user, { question: true }).setTitle("Utilisateur").setDescription(`Quel utilisateur choisissez-vous ?\nRépondez par un nom, un identifiant ou une mention dans le chat.\nRépondez par \`cancel\` pour annuler`)
-export const askChannel = (user: User) => base(user, { question: true }).setTitle("Salon").setDescription(`Quel salon choisissez-vous ?\nRépondez par un nom, un identifiant ou une mention dans le chat.\nRépondez par \`cancel\` pour annuler`)
-export const invalidUser = (user: User) => base(user, { denied: true }).setTitle("Utilisateur invalide").setDescription(`Ce n'est pas un utilisateur valide`)
-export const invalidChannel = (user: User) => base(user, { denied: true }).setTitle("Salon invalide").setDescription(`Ce n'est pas un salon valide`)
+export const askUser = (user: User) =>
+    base(user, { question: true })
+        .setTitle('Utilisateur')
+        .setDescription(
+            `Quel utilisateur choisissez-vous ?\nRépondez par un nom, un identifiant ou une mention dans le chat.\nRépondez par \`cancel\` pour annuler`
+        );
+export const askChannel = (user: User) =>
+    base(user, { question: true })
+        .setTitle('Salon')
+        .setDescription(
+            `Quel salon choisissez-vous ?\nRépondez par un nom, un identifiant ou une mention dans le chat.\nRépondez par \`cancel\` pour annuler`
+        );
+export const invalidUser = (user: User) =>
+    base(user, { denied: true }).setTitle('Utilisateur invalide').setDescription(`Ce n'est pas un utilisateur valide`);
+export const invalidChannel = (user: User) =>
+    base(user, { denied: true }).setTitle('Salon invalide').setDescription(`Ce n'est pas un salon valide`);
 export const invalidChannelType = (user: User, accepted: ChannelType[]) => {
-    const vals: Record<keyof typeof ChannelType, string> = {
-        AnnouncementThread: "fil d'annonce",
-        DM: "messages privés",
-        GroupDM: 'groupe privé',
-        GuildAnnouncement: "annonces",
-        GuildCategory: "catégorie",
-        GuildDirectory: "catégorie",
-        GuildForum: "forum",
-        GuildNews: "annonces",
-        GuildNewsThread: "fil d'annonces",
-        GuildPrivateThread: "fil privé",
-        GuildPublicThread: "fil public",
-        GuildStageVoice: "conférences",
-        GuildText: "textuel",
-        GuildVoice: 'vocal',
-        PrivateThread: "fil privé",
-        PublicThread: "fil public"
-    }
+    const vals: Record<ChannelType, string> = {
+        10: "fil d'annonce",
+        1: 'messages privés',
+        3: 'groupe privé',
+        5: 'annonces',
+        4: 'catégorie',
+        14: 'catégorie',
+        15: 'forum',
+        12: 'fil privé',
+        11: 'fil public',
+        13: 'conférences',
+        0: 'textuel',
+        2: 'vocal'
+    };
 
-    return base(user, { denied: true }).setTitle("Type de salon invalide").setDescription(`Ce n'est pas un salon valide, veuillez spécifier un salon de type : ${accepted.map(x => vals[x]).join(', ')}`)
-}
+    return base(user, { denied: true })
+        .setTitle('Type de salon invalide')
+        .setDescription(
+            `Ce n'est pas un salon valide, veuillez spécifier un salon de type : ${accepted
+                .map((x) => vals[x])
+                .join(', ')}`
+        );
+};

@@ -322,3 +322,4 @@ export const displayDate = (date: DateResolvable, divide?: boolean) => {
     if (!!divide) value = Math.floor(value / 1000);
     return `<t:${value}:F> ( <t:${value}:R> )`;
 };
+export const capitalize = (str: string) => (!str ? null : str[0].toUpperCase() + str.slice(1));

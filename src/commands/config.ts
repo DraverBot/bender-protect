@@ -1,11 +1,22 @@
 import { AmethystCommand, log4js, preconditions, waitForInteraction, waitForMessage } from 'amethystjs';
-import { ApplicationCommandOptionType, ChannelSelectMenuBuilder, ComponentType, Message, StringSelectMenuBuilder, TextChannel, UserSelectMenuBuilder } from 'discord.js';
+import {
+    ApplicationCommandOptionType,
+    ChannelSelectMenuBuilder,
+    ChannelType,
+    ComponentType,
+    Message,
+    StringSelectMenuBuilder,
+    TextChannel,
+    UserSelectMenuBuilder
+} from 'discord.js';
 import { configs } from '../typings/database';
 import { configsData } from '../data/configsData';
-import { buildButton, confirm, pingChannel, pingUser, resize, row, secondsToWeeks } from '../utils/toolbox';
+import { buildButton, capitalize, confirm, pingChannel, pingUser, resize, row, secondsToWeeks } from '../utils/toolbox';
 import { cancel, classic } from '../utils/embeds';
 import waitForNumber from '../processes/waitForNumber';
 import GetTime from '../processes/GetTime';
+import GetUser from '../processes/GetUser';
+import GetChannel from '../processes/GetChannel';
 
 export default new AmethystCommand({
     name: 'configurer',
@@ -144,27 +155,58 @@ export default new AmethystCommand({
             const time = await GetTime.process({
                 interaction,
                 user: interaction.user,
-                embed: classic(interaction.user, { question: true }).setTitle("Temps").setDescription(`Sur combien de temps voulez configurer **${metadata.name.toLowerCase()}**`)
-            })
+                embed: classic(interaction.user, { question: true })
+                    .setTitle('Temps')
+                    .setDescription(`Sur combien de temps voulez configurer **${metadata.name.toLowerCase()}**`)
+            });
 
-            if (time === "time's up" || time === 'cancel') return interaction.editReply({ embeds: [cancel()] }).catch(log4js.trace)
+            if (time === "time's up" || time === 'cancel')
+                return interaction.editReply({ embeds: [cancel()] }).catch(log4js.trace);
 
-            interaction.editReply({
-                embeds: [classic(interaction.user, { accentColor: true }).setTitle("Paramètre configuré").setDescription(`Le paramètre **${metadata.name.toLowerCase()}** a été configuré sur ${secondsToWeeks(time, true)}`)]
-            }).catch(log4js.trace)
+            client.confs.setConfig(interaction.guild.id, parameter, time);
+
+            interaction
+                .editReply({
+                    embeds: [
+                        classic(interaction.user, { accentColor: true })
+                            .setTitle('Paramètre configuré')
+                            .setDescription(
+                                `Le paramètre **${metadata.name.toLowerCase()}** a été configuré sur ${secondsToWeeks(
+                                    time,
+                                    true
+                                )}`
+                            )
+                    ]
+                })
+                .catch(log4js.trace);
         }
         if (metadata.type === 'channel[]' || metadata.type === 'user[]') {
             const isUser = metadata.type === 'user[]';
             const data = client.confs.getConfig(interaction.guild.id, parameter) as string[];
 
-            const msg = await interaction.reply({
-                embeds: [ classic(interaction.user, { accentColor: true })
-                    .setTitle(metadata.name)
-                    .setDescription(`Que voulez-vous faire avec le paramètre **${metadata.name.toLowerCase()}** ?`)
-                ],
-                components: [ row(buildButton({ label: 'Ajouter', style: 'Success', id: 'add' }), buildButton({ label: 'Retirer', style: 'Danger', id: 'remove', disabled: data.length === 0 })) ],
-                fetchReply: true
-            }).catch(log4js.trace) as Message<true>
+            const msg = (await interaction
+                .reply({
+                    embeds: [
+                        classic(interaction.user, { accentColor: true })
+                            .setTitle(metadata.name)
+                            .setDescription(
+                                `Que voulez-vous faire avec le paramètre **${metadata.name.toLowerCase()}** ?`
+                            )
+                    ],
+                    components: [
+                        row(
+                            buildButton({ label: 'Ajouter', style: 'Success', id: 'add' }),
+                            buildButton({
+                                label: 'Retirer',
+                                style: 'Danger',
+                                id: 'remove',
+                                disabled: data.length === 0
+                            })
+                        )
+                    ],
+                    fetchReply: true
+                })
+                .catch(log4js.trace)) as Message<true>;
 
             if (!msg) return;
 
@@ -172,15 +214,123 @@ export default new AmethystCommand({
                 componentType: ComponentType.Button,
                 user: interaction.user,
                 message: msg
-            }).catch(log4js.trace)
-
-            if (!rep) return interaction.editReply({
-                embeds: [cancel()],
-                components: []
             }).catch(log4js.trace);
 
+            if (!rep)
+                return interaction
+                    .editReply({
+                        embeds: [cancel()],
+                        components: []
+                    })
+                    .catch(log4js.trace);
+
+            const dataCache = {
+                type: isUser ? 'utilisateur' : 'salon',
+                typePrefix: isUser ? "d'utilisateur" : 'de salon',
+                typeCPrefix: isUser ? 'cet utilisateur' : 'ce salon',
+                ping: isUser ? pingUser : pingChannel
+            };
+            const process = isUser ? GetUser : GetChannel;
+            if (rep.customId === 'add') {
+                const actual = client.confs.getConfig(interaction.guild.id, parameter) as string[];
+
+                const value = await process.process({
+                    interaction,
+                    user: interaction.user,
+                    channelTypes: [ChannelType.GuildText, ChannelType.GuildAnnouncement, ChannelType.GuildForum],
+                    embed: classic(interaction.user, { question: true })
+                        .setTitle(`Ajout ${dataCache.typePrefix}`)
+                        .setDescription(
+                            `Quel ${
+                                dataCache.type
+                            } voulez-vous ajouter à **${metadata.name.toLowerCase()}** ?\nRépondez dans le chat par un nom, un identifiant ou une mention\nRépondez par \`cancel\` pour annuler`
+                        ),
+                    checks: [
+                        {
+                            check: (c) => !actual.includes(c.id),
+                            reply: {
+                                embeds: [
+                                    classic(interaction.user, { denied: true })
+                                        .setTitle(capitalize(dataCache.type) + ' invalide')
+                                        .setDescription(
+                                            `${
+                                                dataCache.typeCPrefix
+                                            } est déjà dans le paramètre **${metadata.name.toLowerCase()}**`
+                                        )
+                                ]
+                            }
+                        }
+                    ]
+                });
+
+                if (!value || value === 'cancel' || value === "time's up")
+                    return interaction.editReply({ embeds: [cancel()] }).catch(log4js.trace);
+
+                actual.push(value.id);
+                client.confs.setConfig(interaction.guild.id, parameter, actual);
+
+                interaction
+                    .editReply({
+                        embeds: [
+                            classic(interaction.user, { accentColor: true })
+                                .setTitle(`${capitalize(dataCache.type)} ajouté`)
+                                .setDescription(
+                                    `${dataCache.ping(value.id)} a été ajouté à **${metadata.name.toLowerCase()}**`
+                                )
+                        ]
+                    })
+                    .catch(log4js.trace);
+            }
             if (rep.customId === 'remove') {
-                
+                const actualValue = client.confs.getConfig(interaction.guild.id, parameter) as string[];
+                const value = await process.process({
+                    interaction,
+                    user: interaction.user,
+                    channelTypes: [ChannelType.GuildAnnouncement, ChannelType.GuildText, ChannelType.GuildForum],
+                    embed: classic(interaction.user, { question: true })
+                        .setTitle(`Retrait ${dataCache.typePrefix}`)
+                        .setDescription(
+                            `Quel ${
+                                dataCache.type
+                            } voulez-vous retirer de **${metadata.name.toLowerCase()}** ?\nRépondez dans le chat par un nom, un identifiant ou une mention\nRépondez par \`cancel\` pour annuler`
+                        ),
+                    checks: [
+                        {
+                            check: (c) => actualValue.includes(c.id),
+                            reply: {
+                                embeds: [
+                                    classic(interaction.user, { denied: true })
+                                        .setTitle(`${capitalize(dataCache.type)} invalide`)
+                                        .setDescription(
+                                            `${capitalize(
+                                                dataCache.typeCPrefix
+                                            )} n'existe pas dans le paramètre **${metadata.name.toLowerCase()}**`
+                                        )
+                                ]
+                            }
+                        }
+                    ]
+                });
+
+                if (value === 'cancel' || value === "time's up")
+                    return interaction.editReply({ embeds: [cancel()] }).catch(log4js.trace);
+
+                const actual = (client.confs.getConfig(interaction.guild.id, parameter) as string[]).filter(
+                    (x) => x !== value.id
+                );
+                client.confs.setConfig(interaction.guild.id, parameter, actual);
+
+                interaction
+                    .editReply({
+                        embeds: [
+                            classic(interaction.user, { accentColor: true })
+                                .setTitle(`${capitalize(dataCache.type)} retiré`)
+                                .setDescription(
+                                    `${dataCache.ping(value.id)} a été retiré de **${metadata.name.toLowerCase()}**`
+                                )
+                        ]
+                    })
+                    .catch(log4js.trace);
             }
         }
     }
@@ -196,17 +346,26 @@ export default new AmethystCommand({
                         classic(interaction.user, { accentColor: true })
                             .setTitle(metadata.name)
                             .setDescription(
-                                `Le paramètre ${metadata.name} est ${
-                                    typeof data === 'boolean'
-                                        ? data
-                                            ? 'activé'
-                                            : 'désactivé'
-                                        : typeof data === 'string'
-                                        ? `configuré sur \`\`\`${resize(data, 3000)}\`\`\``
-                                        : metadata.type === 'channel[]' || metadata.type === 'user[]'
-                                        ? (data as string[]).map(metadata.type === 'user[]' ? pingUser : pingChannel).join(' ')
-                                        : `configuré sur \`${(data as number).toLocaleString('fr')}\``
-                                }`
+                                resize(
+                                    `Le paramètre ${metadata.name} est ${
+                                        typeof data === 'boolean'
+                                            ? data
+                                                ? 'activé'
+                                                : 'désactivé'
+                                            : typeof data === 'string'
+                                            ? `configuré sur \`\`\`${resize(data, 3000)}\`\`\``
+                                            : metadata.type === 'channel[]' || metadata.type === 'user[]'
+                                            ? (data as string[]).length === 0
+                                                ? 'Aucune valeur'
+                                                : (data as string[])
+                                                      .map(metadata.type === 'user[]' ? pingUser : pingChannel)
+                                                      .join(' ')
+                                            : metadata.type === 'time'
+                                            ? `configuré sur \`${secondsToWeeks(data as number, true)}\``
+                                            : `configuré sur \`${(data as number).toLocaleString('fr')}\``
+                                    }`,
+                                    4096
+                                )
                             )
                     ]
                 })
@@ -231,6 +390,14 @@ export default new AmethystCommand({
                                 : 'désactivé'
                             : typeof value === 'string'
                             ? `\`\`\`${resize(value, 1000)}\`\`\``
+                            : meta.type === 'channel[]' || meta.type === 'user[]'
+                            ? (value as string[]).length === 0
+                                ? 'Aucune valeur'
+                                : (value as string[])
+                                      .map((x) => (meta.type === 'channel[]' ? pingChannel(x) : pingUser(x)))
+                                      .join(' ')
+                            : meta.type === 'time'
+                            ? `\`${secondsToWeeks(value as number, true)}\``
                             : `\`${(value as number).toLocaleString('fr')}\``,
                         1000
                     ),

@@ -36,7 +36,7 @@ export const configsData: Record<
         default: 5000
     },
     antispam_bot: {
-        name: "Antispam-bot",
+        name: 'Antispam-bot',
         description: "L'antispam marche contre les bots",
         type: 'boolean',
         default: true
