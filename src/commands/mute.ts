@@ -3,7 +3,7 @@ import { ApplicationCommandOptionType, GuildMember } from 'discord.js';
 import { addModLog, displayDate, pingUser, secondsToWeeks } from '../utils/toolbox';
 import whitelisted from '../preconditions/whitelisted';
 import perms from '../preconditions/perms';
-import { classic, memberBot } from '../utils/embeds';
+import { classic, memberBot, memberNotModeratable } from '../utils/embeds';
 
 export default new AmethystCommand({
     name: 'mute',
@@ -123,6 +123,7 @@ export default new AmethystCommand({
                 embeds: [memberBot(interaction.user, member)]
             })
             .catch(log4js.trace);
+    if (!member.moderatable) return interaction.reply({ embeds: [memberNotModeratable(interaction.user)] }).catch(log4js.trace)
 
     const end = Date.now() + duration * 1000;
     await interaction.deferReply().catch(log4js.trace);

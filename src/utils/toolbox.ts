@@ -295,7 +295,7 @@ export const checkPerms = ({
     const send = (key: replyKey): false => {
         if (sendErrorMessage === true && interaction) {
             systemReply(interaction, {
-                embeds: [(embeds[key] as (user: User, metadata: any) => EmbedBuilder)(interaction.user, { member })],
+                embeds: [(embeds[key] as (user: User, member: GuildMember) => EmbedBuilder)(interaction.user, member)],
                 components: [],
                 ephemeral
             }).catch(log4js.trace);
@@ -306,7 +306,7 @@ export const checkPerms = ({
     const modOwner = mod.id === mod.guild.ownerId;
     if (ownerByPass === true && modOwner) return true;
     if (checkBot && member.user.bot) return send('memberBot');
-    if (checkModeratable && !member.moderatable) return send('memberNotModeratable');
+    if (checkModeratable && !member.kickable) return send('memberNotModeratable');
     if (checkSelf && member.id === mod.id) return send('selfMod');
     if (checkModPosition && !modOwner && member.roles.highest.position >= mod.roles.highest.position)
         return send('memberTooHigh');

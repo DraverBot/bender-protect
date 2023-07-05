@@ -74,7 +74,8 @@ export enum modActionType {
     MessageBulkDelete = 'Suppression de messages',
     Censor = 'Censuration',
     Tempban = 'Bannissement temporaire',
-    Nuke = 'Nettoyage de salon'
+    Nuke = 'Nettoyage de salon',
+    Demote = 'Destitution'
 }
 export type addModLog = {
     guild: Guild;
