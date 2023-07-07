@@ -1,1 +1,1 @@
-export const spams: Map<string, number> = new Map()
+export const spams: Map<string, number> = new Map();

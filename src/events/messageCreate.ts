@@ -4,54 +4,80 @@ import { Collection, GuildMember, Message } from 'discord.js';
 import { addModLog, displayDate, pingUser, secondsToWeeks } from '../utils/toolbox';
 import { classic } from '../utils/embeds';
 
-export default new AmethystEvent('messageCreate', async(message) => {
+export default new AmethystEvent('messageCreate', async (message) => {
     if (!message.guild) return;
     if (message.author.bot && !message.client.confs.getConfig(message.guild.id, 'antispam_bot')) return;
 
     const client = message.client;
     const configs = client.confs.getConfs(message.guild.id);
 
-    if (client.whitelist.isWhitelisted(message.guild, message.author.id)) return
-    if (!configs.antispam || (!configs.antispam_bot && message.author.bot) || configs.antispam_ignored_channels.includes(message.channel.id) || configs.antispam_ignored_users.includes(message.author.id)) return;
+    if (client.whitelist.isWhitelisted(message.guild, message.author.id)) return;
+    if (
+        !configs.antispam ||
+        (!configs.antispam_bot && message.author.bot) ||
+        configs.antispam_ignored_channels.includes(message.channel.id) ||
+        configs.antispam_ignored_users.includes(message.author.id)
+    )
+        return;
 
     const code = `${message.guild.id}.${message.author.id}`;
-    const exists = spams.has(code)
+    const exists = spams.has(code);
 
     const data = (spams.get(code) ?? 0) + 1;
 
-    spams.set(code, data)
+    spams.set(code, data);
     if (!exists) {
         setTimeout(() => {
-            spams.delete(code)
-        }, configs.antispam_time)
+            spams.delete(code);
+        }, configs.antispam_time);
     } else {
         if (data >= configs.antispam_count) {
             const member = message.member as GuildMember;
             if (configs.antispam_delete_messages) {
-                message.channel.messages.fetch().catch(() => {}).then(async(messages: void | Collection<string, Message<boolean>>) => {
-                    if (!messages) return;
+                message.channel.messages
+                    .fetch()
+                    .catch(() => {})
+                    .then(async (messages: void | Collection<string, Message<boolean>>) => {
+                        if (!messages) return;
 
-                    const toDelete = messages.filter(x => x.author.id === message.author.id).toJSON().splice(0, configs.antispam_count);
-                    if (message.channel.isTextBased() && !message.channel.isDMBased()) {
-                        message.channel.bulkDelete(toDelete).catch(() => {})
-                    }
-                })
+                        const toDelete = messages
+                            .filter((x) => x.author.id === message.author.id)
+                            .toJSON()
+                            .splice(0, configs.antispam_count);
+                        if (message.channel.isTextBased() && !message.channel.isDMBased()) {
+                            message.channel.bulkDelete(toDelete).catch(() => {});
+                        }
+                    });
             }
             if (member.moderatable) {
-                const end = Date.now() + configs.antispam_mute_time
-                member.timeout(configs.antispam_mute_time, `Spam`)
-                message.channel.send({
-                    content: pingUser(message.author),
-                    embeds: [ classic(message.author, { mod: true }).setTitle("Réduction au silence").setDescription(`Je vous ai muté, car vous avez dépassé la limite de messages autorisés en **${secondsToWeeks(configs.antispam_time, true)}**.\nVous serez démuté ${displayDate(end, true)}`) ]
-                }).catch(log4js.trace)
+                const end = Date.now() + configs.antispam_mute_time;
+                member.timeout(configs.antispam_mute_time, `Spam`);
+                message.channel
+                    .send({
+                        content: pingUser(message.author),
+                        embeds: [
+                            classic(message.author, { mod: true })
+                                .setTitle('Réduction au silence')
+                                .setDescription(
+                                    `Je vous ai muté, car vous avez dépassé la limite de messages autorisés en **${secondsToWeeks(
+                                        configs.antispam_time,
+                                        true
+                                    )}**.\nVous serez démuté ${displayDate(end, true)}`
+                                )
+                        ]
+                    })
+                    .catch(log4js.trace);
 
                 addModLog({
                     guild: message.guild,
                     member_id: member.id,
                     mod_id: client.user.id,
                     type: 'Mute',
-                    reason: `Action d'antispam ( ${configs.antispam_count} messages en ${secondsToWeeks(configs.antispam_time, true)} )`
-                }).catch(() => {})
+                    reason: `Action d'antispam ( ${configs.antispam_count} messages en ${secondsToWeeks(
+                        configs.antispam_time,
+                        true
+                    )} )`
+                }).catch(() => {});
             }
         }
     }

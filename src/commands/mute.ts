@@ -123,7 +123,8 @@ export default new AmethystCommand({
                 embeds: [memberBot(interaction.user, member)]
             })
             .catch(log4js.trace);
-    if (!member.moderatable) return interaction.reply({ embeds: [memberNotModeratable(interaction.user)] }).catch(log4js.trace)
+    if (!member.moderatable)
+        return interaction.reply({ embeds: [memberNotModeratable(interaction.user)] }).catch(log4js.trace);
 
     const end = Date.now() + duration * 1000;
     await interaction.deferReply().catch(log4js.trace);

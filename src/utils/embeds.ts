@@ -9,7 +9,7 @@ const base = (
         iconOption?: 'user' | 'client';
         footerText?: 'user' | 'client';
         question?: boolean;
-        mod?: boolean
+        mod?: boolean;
     }
 ) => {
     const embed = new EmbedBuilder({

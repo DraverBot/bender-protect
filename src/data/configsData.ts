@@ -60,7 +60,7 @@ export const configsData: Record<
         default: 300000
     },
     antispam_delete_messages: {
-        name: "Suppression du spam",
+        name: 'Suppression du spam',
         description: "Supprime les messages qu'un utilisateur a spammé quand il se fait détecter par l'antispam",
         type: 'boolean',
         default: true

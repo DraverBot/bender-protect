@@ -50,22 +50,20 @@ export class ConfigsManager {
             `INSERT INTO ${DatabaseTables.Configs} ( ${Object.keys(configs).join(', ')} ) VALUES ( ${Object.keys(
                 configs
             )
-                .map(
-                    (x) => {
-                        const xQuote = configsData[x]?.type?.includes('[') ? "'" : '"';
-                        return `${xQuote}${
-                            typeof configs[x] === 'boolean'
-                                ? configs[x]
-                                    ? '1'
-                                    : '0'
-                                : typeof configs[x] === 'string'
-                                ? sqlise(configs[x])
-                                : typeof configs[x] === 'number'
-                                ? configs[x]
-                                : JSON.stringify(configs[x])
-                        }${xQuote}`
-                    }
-                )
+                .map((x) => {
+                    const xQuote = configsData[x]?.type?.includes('[') ? "'" : '"';
+                    return `${xQuote}${
+                        typeof configs[x] === 'boolean'
+                            ? configs[x]
+                                ? '1'
+                                : '0'
+                            : typeof configs[x] === 'string'
+                            ? sqlise(configs[x])
+                            : typeof configs[x] === 'number'
+                            ? configs[x]
+                            : JSON.stringify(configs[x])
+                    }${xQuote}`;
+                })
                 .join(', ')} ) ON DUPLICATE KEY UPDATE ${config}=${quote}${mysqlData}${quote}`
         );
     }
