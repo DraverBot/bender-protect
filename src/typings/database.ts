@@ -54,7 +54,7 @@ export type tempbans = {
     endsAt: number;
     id: number;
 };
-export type antilinkPerm = 'wlonly' | 'admins'
+export type antilinkPerm = 'wlonly' | 'admins';
 export type configs<Raw extends boolean> = {
     gban: If<Raw, string, boolean>;
     raidmode: If<Raw, string, boolean>;

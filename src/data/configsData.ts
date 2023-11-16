@@ -72,7 +72,7 @@ export const configsData: Record<
         default: false
     },
     antilink_discord_invites: {
-        name: "Détection des invitations discord seulement",
+        name: 'Détection des invitations discord seulement',
         description: "L'anti-liens ne détectera que les invitations Discord",
         type: 'boolean',
         default: false

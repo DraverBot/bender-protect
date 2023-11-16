@@ -328,27 +328,28 @@ export const hasLink = (str: string) => {
     const regex =
         /^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:[/?#]\S*)?$/i;
     return regex.test(str);
-}
+};
 export const hasDiscordLink = (str: string) => {
-    const regex = /(?:h *t *t *p *s? *: *\/ *\/? *)?((d *i *s *c *o *r *d)|(d *s *c) *)(\. *)?((c *o *m *(\/ *)?i *n *v *i *t *e)|(g *(g *)?) *)(\/ *)?[a-z]{2,255}/gmi
+    const regex =
+        /(?:h *t *t *p *s? *: *\/ *\/? *)?((d *i *s *c *o *r *d)|(d *s *c) *)(\. *)?((c *o *m *(\/ *)?i *n *v *i *t *e)|(g *(g *)?) *)(\/ *)?[a-z]{2,255}/gim;
 
-    return regex.test(str)
-}
+    return regex.test(str);
+};
 export const sameCollections = <K, V>(a: Collection<K, V>, b: Collection<K, V>) => {
-    if (a.size !== b.size) return false
-    if (a.size === 0) return true
-    
-    let i = 0
+    if (a.size !== b.size) return false;
+    if (a.size === 0) return true;
+
+    let i = 0;
     const entries = new Map(a.entries());
-    const keys = [...entries]
-    let same = true
+    const keys = [...entries];
+    let same = true;
 
     while (same && i < entries.size - 1) {
-        const entry = keys[i]
-        same = a.get(entry[0]) === b.get(entry[0])
+        const entry = keys[i];
+        same = a.get(entry[0]) === b.get(entry[0]);
 
-        i++
+        i++;
     }
 
-    return same
-}
+    return same;
+};
