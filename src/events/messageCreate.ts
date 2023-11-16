@@ -1,16 +1,28 @@
 import { AmethystEvent, log4js } from 'amethystjs';
 import { spams } from '../data/maps';
 import { Collection, GuildMember, Message } from 'discord.js';
-import { addModLog, displayDate, pingUser, secondsToWeeks } from '../utils/toolbox';
+import { addModLog, displayDate, hasDiscordLink, hasLink, pingUser, secondsToWeeks } from '../utils/toolbox';
 import { classic } from '../utils/embeds';
 
 export default new AmethystEvent('messageCreate', async (message) => {
     if (!message.guild) return;
-    if (message.author.bot && !message.client.confs.getConfig(message.guild.id, 'antispam_bot')) return;
-
+    
     const client = message.client;
     const configs = client.confs.getConfs(message.guild.id);
 
+    if (configs.antilink && !configs.antilink_ignored_channels.includes(message.channel.id) && !configs.antilink_ignored_users.includes(message.author.id)) {
+        const res = configs.antilink_discord_invites ? hasDiscordLink(message?.content ?? '') : hasLink(message?.content ?? '');
+
+        if (res) {
+            message.delete().catch(log4js.trace)
+            message.channel.send({
+                content: `${pingUser(message.author)}`,
+                embeds: [ classic(message.author, { mod: true }).setTitle("Message supprimé") ]
+            })
+        }
+    }
+    
+    if (message.author.bot && !configs.antispam_bot) return;
     if (client.whitelist.isWhitelisted(message.guild, message.author.id)) return;
     if (
         !configs.antispam ||

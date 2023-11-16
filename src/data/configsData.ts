@@ -64,5 +64,29 @@ export const configsData: Record<
         description: "Supprime les messages qu'un utilisateur a spammé quand il se fait détecter par l'antispam",
         type: 'boolean',
         default: true
+    },
+    antilink: {
+        name: 'Anti-liens',
+        description: "Active l'anti-lien dans les messages du serveur",
+        type: 'boolean',
+        default: false
+    },
+    antilink_discord_invites: {
+        name: "Détection des invitations discord seulement",
+        description: "L'anti-liens ne détectera que les invitations Discord",
+        type: 'boolean',
+        default: false
+    },
+    antilink_ignored_users: {
+        name: "Utilisateurs ignorés de l'anti-lien",
+        description: "Les utilisateurs qui ne sont pas détectés par l'anti-liens",
+        default: [],
+        type: 'user[]'
+    },
+    antilink_ignored_channels: {
+        name: "Salons ignorés de l'anti-liens",
+        description: "Les salons ignorés par l'anti-liens",
+        default: [],
+        type: 'channel[]'
     }
 };

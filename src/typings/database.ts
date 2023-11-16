@@ -54,6 +54,7 @@ export type tempbans = {
     endsAt: number;
     id: number;
 };
+export type antilinkPerm = 'wlonly' | 'admins'
 export type configs<Raw extends boolean> = {
     gban: If<Raw, string, boolean>;
     raidmode: If<Raw, string, boolean>;
@@ -65,5 +66,9 @@ export type configs<Raw extends boolean> = {
     antispam_ignored_users: If<Raw, string, string[]>;
     antispam_mute_time: If<Raw, string, number>;
     antispam_delete_messages: If<Raw, string, boolean>;
+    antilink: If<Raw, string, boolean>;
+    antilink_discord_invites: If<Raw, string, boolean>;
+    antilink_ignored_users: If<Raw, string, string[]>;
+    antilink_ignored_channels: If<Raw, string, string[]>;
 };
 export type configsDb<Raw extends boolean = false> = configs<Raw> & { guild_id: string };
