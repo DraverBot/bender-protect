@@ -87,14 +87,14 @@ export class ConfigsManager {
                 antispam_count: x.antispam_count,
                 antispam_time: parseInt(x.antispam_time),
                 antispam_bot: this.bool(x.antispam_bot),
-                antispam_ignored_channels: JSON.parse(x.antispam_ignored_channels),
-                antispam_ignored_users: JSON.parse(x.antispam_ignored_users),
+                antispam_ignored_channels: JSON.parse(x.antispam_ignored_channels ?? '[]'),
+                antispam_ignored_users: JSON.parse(x.antispam_ignored_users ?? '[]'),
                 antispam_mute_time: parseInt(x.antispam_mute_time),
                 antispam_delete_messages: this.bool(x.antispam_delete_messages),
                 antilink: this.bool(x.antilink),
                 antilink_discord_invites: this.bool(x.antilink_discord_invites),
-                antilink_ignored_channels: JSON.parse(x.antilink_ignored_channels),
-                antilink_ignored_users: JSON.parse(x.antilink_ignored_users)
+                antilink_ignored_channels: JSON.parse(x.antilink_ignored_channels ?? '[]'),
+                antilink_ignored_users: JSON.parse(x.antilink_ignored_users ?? '[]')
             });
         });
     }
