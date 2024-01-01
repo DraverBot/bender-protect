@@ -71,8 +71,8 @@ export class ConfigsManager {
         return this.getConfs(guild)[key];
     }
 
-    private bool(inp: string | number): boolean {
-        return inp.toString() === '1';
+    private bool(inp: string | number, defaultValue = false): boolean {
+        return ![null, undefined].includes(inp) ? inp.toString() === '1' : defaultValue;
     }
     private async fillCache() {
         const data = await query<configsDb<true>>(`SELECT * FROM ${DatabaseTables.Configs}`);
